@@ -1,7 +1,7 @@
 # Личный проект «Кэндишоп» [![Build status][travis-image]][travis-url]
 
 * Студент: [Marina Sidorkina](https://up.htmlacademy.ru/javascript/15/user/185248).
-* Наставник: `Неизвестно`.
+* Наставник: [Олег Петров](https://htmlacademy.ru/profile/fyvfyv).
 
 ---
 
