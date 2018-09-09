@@ -1,5 +1,13 @@
 'use strict';
+
+// КОНСТАНТЫ ДЛЯ ВТОРОГО ЗАДАНИЯ
+
+var CATALOG__CARDS = document.querySelector('.catalog__cards');
+var CATALOG__LOAD = document.querySelector('.catalog__load');
+var CARD__TEMPLATE = document.querySelector('#card').content.querySelector('article');
+
 // ПЕРВОЕ ЗАДАНИЕ
+
 var ARRAY_LENGTH = 26;
 
 var amountParams = {
@@ -55,7 +63,14 @@ var renderObject = function (nameArr, pictureArr, contentsArr) {
   object.nutritionFacts = {};
   object.nutritionFacts.sugar = Boolean(getRandom(0, 2));
   object.nutritionFacts.energy = getRandom(energyParams.MIN, energyParams.MAX + 1);
-  object.nutritionFacts.contents = contentsArr[getRandom(0, contentsArr.length)];
+  var getContentArr = function () {
+    var array = [];
+    for (var i = 0; i < getRandom(1, contentsArray.length); i++) {
+      array[i] = contentsArr[getRandom(0, contentsArr.length)];
+    }
+    return array;
+  };
+  object.nutritionFacts.contents = getContentArr();
   return object;
 };
 
@@ -68,18 +83,68 @@ var renderArray = function (arrayLength) {
   return array;
 };
 
-var goodsArray = renderArray(ARRAY_LENGTH)
+var goodsArray = renderArray(ARRAY_LENGTH);
 
 // ВТОРОЕ ЗАДАНИЕ
-var CATALOG__CARDS = document.querySelector('.catalog__cards');
-var CATALOG__LOAD = document.querySelector('.catalog__load');
 
 CATALOG__CARDS.classList.remove('catalog__cards--load');
 CATALOG__LOAD.classList.add('visually-hidden');
 
-var CARD__TEMPLATE = document.querySelector('#card').content.querySelector('article');
-
 var renderDomObject = function (object) {
   var card = CARD__TEMPLATE.cloneNode(true);
 
+  var getAvailability = function () {
+    var availability = 'card--in-stock';
+    if (object.amount === 0) {
+      availability = 'card--soon';
+    } else if (object.amount >= 1 && object.amount <= 5) {
+      availability = 'card--little';
+    }
+    return availability;
+  };
+  card.classList.add(getAvailability());
+
+  card.querySelector('.card__title').textContent = object.name;
+  card.querySelector('.card__img').src = object.picture;
+
+  var rubleSpan = card.querySelector('.card__currency').cloneNode(true);
+  var weightSpan = card.querySelector('.card__weight').cloneNode(true);
+  var priceText = document.createTextNode(object.price + ' ');
+  var weightTextNode = document.createTextNode('/ ' + object.weight + ' Г');
+  card.querySelector('.card__price').textContent = '';
+  card.querySelector('.card__price').appendChild(priceText);
+  card.querySelector('.card__price').appendChild(rubleSpan);
+  card.querySelector('.card__price').appendChild(weightSpan).textContent = '';
+  weightSpan.appendChild(weightTextNode);
+
+  var goodRating = card.querySelector('.stars__rating');
+  goodRating.classList.remove('stars__rating--five');
+  var getRatingStars = function () {
+    var rating;
+    if (object.rating.value === 5) {
+      rating = 'stars__rating--five';
+    } else if (object.rating.value === 4) {
+      rating = 'stars__rating--four';
+    } else if (object.rating.value === 3) {
+      rating = 'stars__rating--three';
+    } else if (object.rating.value === 2) {
+      rating = 'stars__rating--two';
+    } else if (object.rating.value === 1) {
+      rating = 'stars__rating--one';
+    }
+    return rating;
+  };
+  goodRating.classList.add(getRatingStars());
+
+  card.querySelector('.star__count').textContent = object.rating.number;
+
+  var getSugarValue = function () {
+    return object.nutritionFacts.sugar ? 'Содержит сахар' : 'Без сахара';
+  };
+  card.querySelector('.card__characteristic').textContent = getSugarValue(object.nutritionFacts.sugar);
+  card.querySelector('.card__composition-list').textContent = object.nutritionFacts.contents;
+
+  return card;
 };
+
+renderDomObject(goodsArray);
