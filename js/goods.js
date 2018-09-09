@@ -6,9 +6,16 @@ var CATALOG__CARDS = document.querySelector('.catalog__cards');
 var CATALOG__LOAD = document.querySelector('.catalog__load');
 var CARD__TEMPLATE = document.querySelector('#card').content.querySelector('article');
 
+// КОНСТАНТЫ ДЛЯ ТРЕТЬЕГО ЗАДАНИЯ
+
+var ORDER__AMOUNT = 3;
+var ORDER__TEMPLATE = document.querySelector('#card-order').content.querySelector('article');
+var CART__BLOCK = document.querySelector('.goods__cards');
+var EMPTY__BLOCK = document.querySelector('.goods__card-empty');
+
 // ПЕРВОЕ ЗАДАНИЕ
 
-var ARRAY_LENGTH = 26;
+var ARRAY__LENGTH = 26;
 
 var amountParams = {
   MIN: 0,
@@ -42,7 +49,7 @@ var energyParams = {
 
 var nameArray = ['Чесночные сливки', 'Огуречный педант', 'Молочная хрюша', 'Грибной шейк', 'Баклажановое безумие', 'Паприколу итальяно', 'Нинзя-удар васаби', 'Хитрый баклажан', 'Горчичный вызов', 'Кедровая липучка', 'Корманный портвейн', 'Чилийский задира', 'Беконовый взрыв', 'Арахис vs виноград', 'Сельдерейная душа', 'Початок в бутылке', 'Чернющий мистер чеснок', 'Раша федераша', 'Кислая мина', 'Кукурузное утро', 'Икорный фуршет', 'Новогоднее настроение', 'С пивком потянет', 'Мисс креветка', 'Бесконечный взрыв', 'Невинные винные', 'Бельгийское пенное', 'Острый язычок'];
 
-var pictureArray = ['../img/cards/gum-cedar.jpg', '../img/cards/gum-chile.jpg', '../img/cards/gum-eggplant.jpg', '../img/cards/gum-mustard.jpg', '../img/cards/gum-portwine', '../img/cards/gum-wasabi.jpg', '../img/cards/ice-cucumber.jpg', '../img/cards/ice-eggplant.jpg', '../img/cards/ice-garlic.jpg', '../img/cards/ice-italian.jpg', '../img/cards/ice-mushroom.jpg', '../img/cards/ice-pig.jpg', '../img/cards/marmalade-beer.jpg', '../img/cards/marmalade-caviar.jpg', '../img/cards/marmalade-corn.jpg', '../img/cards/marmalade-new-year.jpg', '../img/cards/marmalade-sour.jpg', '../img/cards/marshmallow-bacon.jpg', '../img/cards/marshmallow-beer', '../img/cards/marshmallow-shrimp.jpg', '../img/cards/marshmallow-spicy.jpg', '../img/cards/marshmallow-wine.jpg', '../img/cards/soda-bacon.jpg', '../img/cards/soda-celery.jpg', '../img/cards/soda-cob.jpg', '../img/cards/soda-garlic.jpg', '../img/cards/soda-peanut-grapes.jpg', '../img/cards/soda-russian.jpg'];
+var pictureArray = ['img/cards/gum-cedar.jpg', 'img/cards/gum-chile.jpg', 'img/cards/gum-eggplant.jpg', 'img/cards/gum-mustard.jpg', 'img/cards/gum-portwine.jpg', 'img/cards/gum-wasabi.jpg', 'img/cards/ice-cucumber.jpg', 'img/cards/ice-eggplant.jpg', 'img/cards/ice-garlic.jpg', 'img/cards/ice-italian.jpg', 'img/cards/ice-mushroom.jpg', 'img/cards/ice-pig.jpg', 'img/cards/marmalade-beer.jpg', 'img/cards/marmalade-caviar.jpg', 'img/cards/marmalade-corn.jpg', 'img/cards/marmalade-new-year.jpg', 'img/cards/marmalade-sour.jpg', 'img/cards/marshmallow-bacon.jpg', 'img/cards/marshmallow-beer.jpg', 'img/cards/marshmallow-shrimp.jpg', 'img/cards/marshmallow-spicy.jpg', 'img/cards/marshmallow-wine.jpg', 'img/cards/soda-bacon.jpg', 'img/cards/soda-celery.jpg', 'img/cards/soda-cob.jpg', 'img/cards/soda-garlic.jpg', 'img/cards/soda-peanut-grapes.jpg', 'img/cards/soda-russian.jpg'];
 
 var contentsArray = ['молоко', 'сливки', 'вода', 'пищевой краситель', 'патока', 'ароматизатор бекона', 'ароматизатор свинца', 'ароматизатор, дуба, идентичный натуральному', 'ароматизатор картофеля', 'лимонная кислота', 'загуститель', 'эмульгатор', 'консервант: сорбат калия', 'посолочная смесь: соль', 'нитрит натрия', 'ксилит', 'карбамид', 'вилларибо', 'виллабаджо'];
 
@@ -83,14 +90,14 @@ var renderArray = function (arrayLength) {
   return array;
 };
 
-var goodsArray = renderArray(ARRAY_LENGTH);
+var goodsArray = renderArray(ARRAY__LENGTH);
 
 // ВТОРОЕ ЗАДАНИЕ
 
 CATALOG__CARDS.classList.remove('catalog__cards--load');
 CATALOG__LOAD.classList.add('visually-hidden');
 
-var renderDomObject = function (object) {
+var renderCardDomElements = function (object) {
   var card = CARD__TEMPLATE.cloneNode(true);
 
   var getAvailability = function () {
@@ -147,4 +154,35 @@ var renderDomObject = function (object) {
   return card;
 };
 
-renderDomObject(goodsArray);
+// ПРОВЕРКА РАБОТЫ ФУНКЦИИ ЧЕРЕЗ CONSOLE.LOG()
+renderCardDomElements(goodsArray[0]);
+
+// ТРЕТЬЕ ЗАДАНИЕ
+
+var orderArray = renderArray(ORDER__AMOUNT);
+
+var renderOrderDomElements = function (object) {
+  var orderElement = ORDER__TEMPLATE.cloneNode(true);
+  orderElement.querySelector('.card-order__title').textContent = object.name;
+  orderElement.querySelector('.card-order__img').src = object.picture;
+  orderElement.querySelector('.card-order__img').alt = object.name;
+  var getOrderPrice = function () {
+    return orderElement.querySelector('.card-order__count').value * object.price;
+  };
+  orderElement.querySelector('.card-order__price').textContent = getOrderPrice();
+  return orderElement;
+};
+
+var orderFragment = document.createDocumentFragment();
+
+var createOrderElements = function (array) {
+  for (var i = 0; i < array.length; i++) {
+    var element = renderOrderDomElements(orderArray[i]);
+    orderFragment.appendChild(element);
+  }
+  return orderFragment;
+};
+
+CART__BLOCK.classList.remove('goods__cards--empty');
+EMPTY__BLOCK.classList.add('visually-hidden');
+CART__BLOCK.appendChild(createOrderElements(orderArray));
