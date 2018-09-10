@@ -224,7 +224,7 @@ var createCatalogElements = function () {
   return orderFragment;
 };
 
-catalogCards.appendChild(createCatalogElements(goodsArray));
+catalogCards.appendChild(createCatalogElements());
 catalogCards.classList.remove('catalog__cards--load');
 catalogLoad.classList.add('visually-hidden');
 
@@ -251,4 +251,4 @@ var createOrderElements = function () {
 
 cartBlock.classList.remove('goods__cards--empty');
 emptyBlock.classList.add('visually-hidden');
-cartBlock.appendChild(createOrderElements(orderArray));
+cartBlock.appendChild(createOrderElements());
