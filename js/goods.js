@@ -210,7 +210,7 @@ var renderCardDomElements = function (object) {
   goodRating.classList.remove('stars__rating--five');
   goodRating.classList.add(getRatingStars(object));
   card.querySelector('.star__count').textContent = object.rating.number;
-  card.querySelector('.card__characteristic').textContent = object.nutritionFacts.sugar ? 'Содержит сахар' : 'Без сахара';
+  card.querySelector('.card__characteristic').textContent = object.nutritionFacts.sugar ? 'Содержит сахар, ' + object.nutritionFacts.sugar + ' ккал' : 'Без сахара, ' + object.nutritionFacts.sugar + ' ккал';
   card.querySelector('.card__composition-list').textContent = object.nutritionFacts.contents;
   return card;
 };
