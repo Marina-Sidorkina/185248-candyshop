@@ -2,8 +2,6 @@
 
 var CATALOG_CARDS_LIST_LENGTH = 26;
 var ORDER_CARDS_LIST_LENGTH = 3;
-var catalogGoodsArray;
-var orderGoodsArray;
 var catalogCards = document.querySelector('.catalog__cards');
 var catalogLoad = document.querySelector('.catalog__load');
 var cardTemplate = document.querySelector('#card').content.querySelector('article');
@@ -35,6 +33,14 @@ var energyParams = {
   MIN: 70,
   MAX: 500
 };
+var ratingClasses = {
+  1: '--one',
+  2: '--two',
+  3: '--three',
+  4: '--four',
+  5: '--five'
+};
+
 var GOODS_NAMES = [
   'Чесночные сливки',
   'Огуречный педант',
@@ -161,7 +167,12 @@ var renderGoodsArray = function (arrayLength) {
   return arrayElements;
 };
 
-catalogGoodsArray = renderGoodsArray(CATALOG_CARDS_LIST_LENGTH);
+var createTagElement = function (tag, addClass, text) {
+  var tagElement = document.createElement(tag);
+  tagElement.classList.add(addClass);
+  tagElement.textContent = text;
+  return tagElement;
+};
 
 var getAvailability = function (obj) {
   if (!obj.amount) {
@@ -171,56 +182,27 @@ var getAvailability = function (obj) {
 };
 
 var getRatingStars = function (obj) {
-  var ratingClasses = {
-    1: '--one',
-    2: '--two',
-    3: '--three',
-    4: '--four',
-    5: '--five'
-  };
   return 'stars__rating' + ratingClasses[obj.rating.value];
 };
 
-var createTagElement = function (tag, addClass, text) {
-  var tagElement = document.createElement(tag);
-  tagElement.classList.add(addClass);
-  tagElement.textContent = text;
-  return tagElement;
-};
-
-var renderCardDomElements = function (object) {
-  var card = cardTemplate.cloneNode(true);
-  var goodRating = card.querySelector('.stars__rating');
-  card.classList.add(getAvailability(object));
-  card.querySelector('.card__title').textContent = object.name;
-  card.querySelector('.card__img').src = object.picture;
-  card.querySelector('.card__img').alt = object.name;
-  card.querySelector('.card__price').textContent = object.price + ' ';
-  card.querySelector('.card__price').appendChild(createTagElement('span', 'card__currency', '₽'));
-  card.querySelector('.card__price').appendChild(createTagElement('span', 'card__weight', '/ ' + object.weight + ' Г'));
+var renderCatalogDomElements = function (object) {
+  var catalogElement = cardTemplate.cloneNode(true);
+  var goodRating = catalogElement.querySelector('.stars__rating');
+  catalogElement.classList.add(getAvailability(object));
+  catalogElement.querySelector('.card__title').textContent = object.name;
+  catalogElement.querySelector('.card__img').src = object.picture;
+  catalogElement.querySelector('.card__img').alt = object.name;
+  catalogElement.querySelector('.card__price').textContent = object.price + ' ';
+  catalogElement.querySelector('.card__price').appendChild(createTagElement('span', 'card__currency', '₽'));
+  catalogElement.querySelector('.card__price').appendChild(createTagElement('span', 'card__weight', '/ ' + object.weight + ' Г'));
   goodRating.classList.remove('stars__rating--five');
   goodRating.classList.add(getRatingStars(object));
-  card.querySelector('.star__count').textContent = object.rating.number;
-  card.querySelector('.card__characteristic').textContent = (object.nutritionFacts.sugar ?
+  catalogElement.querySelector('.star__count').textContent = object.rating.number;
+  catalogElement.querySelector('.card__characteristic').textContent = (object.nutritionFacts.sugar ?
     'Содержит сахар, ' : 'Без сахара, ') + object.nutritionFacts.energy + ' ккал';
-  card.querySelector('.card__composition-list').textContent = object.nutritionFacts.contents;
-  return card;
+  catalogElement.querySelector('.card__composition-list').textContent = object.nutritionFacts.contents;
+  return catalogElement;
 };
-
-var createCatalogElements = function () {
-  var orderFragment = document.createDocumentFragment();
-  for (var i = 0; i < catalogGoodsArray.length; i++) {
-    var element = renderCardDomElements(catalogGoodsArray[i]);
-    orderFragment.appendChild(element);
-  }
-  return orderFragment;
-};
-
-catalogCards.appendChild(createCatalogElements());
-catalogCards.classList.remove('catalog__cards--load');
-catalogLoad.classList.add('visually-hidden');
-
-orderGoodsArray = renderGoodsArray(ORDER_CARDS_LIST_LENGTH);
 
 var renderOrderDomElements = function (object) {
   var orderElement = orderTemplate.cloneNode(true);
@@ -232,6 +214,15 @@ var renderOrderDomElements = function (object) {
   return orderElement;
 };
 
+var createCatalogElements = function () {
+  var catalogFragment = document.createDocumentFragment();
+  for (var i = 0; i < catalogGoodsArray.length; i++) {
+    var element = renderCatalogDomElements(catalogGoodsArray[i]);
+    catalogFragment.appendChild(element);
+  }
+  return catalogFragment;
+};
+
 var createOrderElements = function () {
   var orderFragment = document.createDocumentFragment();
   for (var i = 0; i < orderGoodsArray.length; i++) {
@@ -241,6 +232,11 @@ var createOrderElements = function () {
   return orderFragment;
 };
 
+var catalogGoodsArray = renderGoodsArray(CATALOG_CARDS_LIST_LENGTH);
+var orderGoodsArray = renderGoodsArray(ORDER_CARDS_LIST_LENGTH);
+catalogCards.appendChild(createCatalogElements());
+catalogCards.classList.remove('catalog__cards--load');
+catalogLoad.classList.add('visually-hidden');
 cartBlock.classList.remove('goods__cards--empty');
 emptyBlock.classList.add('visually-hidden');
 cartBlock.appendChild(createOrderElements());
