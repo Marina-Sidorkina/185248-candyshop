@@ -126,11 +126,11 @@ var getRandomBoolean = function () {
 };
 
 var getContentArr = function () {
-  var array = [];
+  var arrayElements = [];
   for (var i = 0; i < getRandomNumber(getRandomNumber(1, CONTENTS_ITEMS.length), CONTENTS_ITEMS.length); i++) {
-    array[i] = CONTENTS_ITEMS[getRandomNumber(0, CONTENTS_ITEMS.length)];
+    arrayElements[i] = CONTENTS_ITEMS[getRandomNumber(0, CONTENTS_ITEMS.length)];
   }
-  return array.join(', ');
+  return arrayElements.join(', ');
 };
 
 var createGoodsArrayElement = function () {
