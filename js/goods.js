@@ -1,7 +1,9 @@
 'use strict';
 
-var ARRAY_LENGTH = 26;
-var ORDER_AMOUNT = 3;
+var CATALOG_CARDS_LIST_LENGTH = 26;
+var ORDER_CARDS_LIST_LENGTH = 3;
+var catalogGoodsArray;
+var orderGoodsArray;
 var catalogCards = document.querySelector('.catalog__cards');
 var catalogLoad = document.querySelector('.catalog__load');
 var cardTemplate = document.querySelector('#card').content.querySelector('article');
@@ -33,7 +35,7 @@ var energyParams = {
   MIN: 70,
   MAX: 500
 };
-var NAME_ARRAY = [
+var GOODS_NAMES = [
   'Чесночные сливки',
   'Огуречный педант',
   'Молочная хрюша',
@@ -63,7 +65,7 @@ var NAME_ARRAY = [
   'Бельгийское пенное',
   'Острый язычок'
 ];
-var PICTURE_ARRAY = [
+var PICTURES_LINKS = [
   'img/cards/gum-cedar.jpg',
   'img/cards/gum-chile.jpg',
   'img/cards/gum-eggplant.jpg',
@@ -93,7 +95,7 @@ var PICTURE_ARRAY = [
   'img/cards/soda-peanut-grapes.jpg',
   'img/cards/soda-russian.jpg'
 ];
-var CONTENTS_ARRAY = [
+var CONTENTS_ITEMS = [
   'молоко',
   'сливки',
   'вода',
@@ -120,21 +122,21 @@ var getRandomNumber = function (min, max) {
 };
 
 var getRandomBoolean = function () {
-  return (Math.floor(Math.random() * 2) === 0);
+  return Math.random() >= 0.5;
 };
 
 var getContentArr = function () {
   var array = [];
-  for (var i = 0; i < getRandomNumber(1, CONTENTS_ARRAY.length); i++) {
-    array[i] = CONTENTS_ARRAY[getRandomNumber(0, CONTENTS_ARRAY.length)];
+  for (var i = 0; i < getRandomNumber(getRandomNumber(1, CONTENTS_ITEMS.length), CONTENTS_ITEMS.length); i++) {
+    array[i] = CONTENTS_ITEMS[getRandomNumber(0, CONTENTS_ITEMS.length)];
   }
-  return array;
+  return array.join(', ');
 };
 
-var createObject = function () {
-  var object = {
-    name: NAME_ARRAY[getRandomNumber(0, NAME_ARRAY.length)],
-    picture: PICTURE_ARRAY[getRandomNumber(0, PICTURE_ARRAY.length)],
+var createGoodsArrayElement = function () {
+  return {
+    name: GOODS_NAMES[getRandomNumber(0, GOODS_NAMES.length)],
+    picture: PICTURES_LINKS[getRandomNumber(0, PICTURES_LINKS.length)],
     amount: getRandomNumber(amountParams.MIN, amountParams.MAX + 1),
     price: getRandomNumber(priceParams.MIN, priceParams.MAX + 1),
     weight: getRandomNumber(weightParams.MIN, weightParams.MAX + 1),
@@ -148,19 +150,18 @@ var createObject = function () {
       contents: getContentArr()
     }
   };
-  return object;
 };
 
-var renderArray = function (arrayLength) {
-  var array = [];
+var renderGoodsArray = function (arrayLength) {
+  var arrayElements = [];
   for (var i = 0; i < arrayLength; i++) {
-    var element = createObject();
-    array[i] = element;
+    var element = createGoodsArrayElement();
+    arrayElements[i] = element;
   }
-  return array;
+  return arrayElements;
 };
 
-var goodsArray = renderArray(ARRAY_LENGTH);
+catalogGoodsArray = renderGoodsArray(CATALOG_CARDS_LIST_LENGTH);
 
 var getAvailability = function (obj) {
   if (!obj.amount) {
@@ -170,55 +171,46 @@ var getAvailability = function (obj) {
 };
 
 var getRatingStars = function (obj) {
-  var rating;
-  switch (obj.rating.value) {
-    case 5:
-      rating = 'stars__rating--five';
-      break;
-    case 4:
-      rating = 'stars__rating--four';
-      break;
-    case 3:
-      rating = 'stars__rating--three';
-      break;
-    case 2:
-      rating = 'stars__rating--two';
-      break;
-    case 1:
-      rating = 'stars__rating--one';
-      break;
-  }
-  return rating;
+  var ratingClasses = {
+    1: '--one',
+    2: '--two',
+    3: '--three',
+    4: '--four',
+    5: '--five'
+  };
+  return 'stars__rating' + ratingClasses[obj.rating.value];
+};
+
+var createTagElement = function (tag, addClass, text) {
+  var tagElement = document.createElement(tag);
+  tagElement.classList.add(addClass);
+  tagElement.textContent = text;
+  return tagElement;
 };
 
 var renderCardDomElements = function (object) {
   var card = cardTemplate.cloneNode(true);
+  var goodRating = card.querySelector('.stars__rating');
   card.classList.add(getAvailability(object));
   card.querySelector('.card__title').textContent = object.name;
   card.querySelector('.card__img').src = object.picture;
   card.querySelector('.card__img').alt = object.name;
   card.querySelector('.card__price').textContent = object.price + ' ';
-  var roubleSpan = document.createElement('span');
-  roubleSpan.classList.add('card__currency');
-  roubleSpan.textContent = '₽';
-  card.querySelector('.card__price').appendChild(roubleSpan);
-  var weightSpan = document.createElement('span');
-  weightSpan.classList.add('card__weight');
-  weightSpan.textContent = '/ ' + object.weight + ' Г';
-  card.querySelector('.card__price').appendChild(weightSpan);
-  var goodRating = card.querySelector('.stars__rating');
+  card.querySelector('.card__price').appendChild(createTagElement('span', 'card__currency', '₽'));
+  card.querySelector('.card__price').appendChild(createTagElement('span', 'card__weight', '/ ' + object.weight + ' Г'));
   goodRating.classList.remove('stars__rating--five');
   goodRating.classList.add(getRatingStars(object));
   card.querySelector('.star__count').textContent = object.rating.number;
-  card.querySelector('.card__characteristic').textContent = object.nutritionFacts.sugar ? 'Содержит сахар, ' + object.nutritionFacts.sugar + ' ккал' : 'Без сахара, ' + object.nutritionFacts.sugar + ' ккал';
+  card.querySelector('.card__characteristic').textContent = (object.nutritionFacts.sugar ?
+    'Содержит сахар, ' : 'Без сахара, ') + object.nutritionFacts.energy + ' ккал';
   card.querySelector('.card__composition-list').textContent = object.nutritionFacts.contents;
   return card;
 };
 
 var createCatalogElements = function () {
   var orderFragment = document.createDocumentFragment();
-  for (var i = 0; i < goodsArray.length; i++) {
-    var element = renderCardDomElements(goodsArray[i]);
+  for (var i = 0; i < catalogGoodsArray.length; i++) {
+    var element = renderCardDomElements(catalogGoodsArray[i]);
     orderFragment.appendChild(element);
   }
   return orderFragment;
@@ -228,7 +220,7 @@ catalogCards.appendChild(createCatalogElements());
 catalogCards.classList.remove('catalog__cards--load');
 catalogLoad.classList.add('visually-hidden');
 
-var orderArray = renderArray(ORDER_AMOUNT);
+orderGoodsArray = renderGoodsArray(ORDER_CARDS_LIST_LENGTH);
 
 var renderOrderDomElements = function (object) {
   var orderElement = orderTemplate.cloneNode(true);
@@ -242,8 +234,8 @@ var renderOrderDomElements = function (object) {
 
 var createOrderElements = function () {
   var orderFragment = document.createDocumentFragment();
-  for (var i = 0; i < orderArray.length; i++) {
-    var element = renderOrderDomElements(orderArray[i]);
+  for (var i = 0; i < orderGoodsArray.length; i++) {
+    var element = renderOrderDomElements(orderGoodsArray[i]);
     orderFragment.appendChild(element);
   }
   return orderFragment;
