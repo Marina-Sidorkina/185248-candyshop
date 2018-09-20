@@ -1,12 +1,22 @@
 'use strict';
 
 var CATALOG_CARDS_LIST_LENGTH = 26;
+var order = [];
 var catalogCards = document.querySelector('.catalog__cards');
 var catalogLoad = document.querySelector('.catalog__load');
 var cardTemplate = document.querySelector('#card').content.querySelector('article');
 var orderTemplate = document.querySelector('#card-order').content.querySelector('article');
 var cartBlock = document.querySelector('.goods__cards');
 var emptyBlock = document.querySelector('.goods__card-empty');
+var headerBasket = document.querySelector('.main-header__basket');
+var paymentMethodCardBtn = document.querySelector('#payment__card');
+var paymentMethodCashBtn = document.querySelector('#payment__cash');
+var paymentByCardBlock = document.querySelector('.payment__card-wrap');
+var paymentByCashBlock = document.querySelector('.payment__cash-wrap');
+var deliverInStoreBtn = document.querySelector('#deliver__store');
+var deliverByCourierBtn = document.querySelector('#deliver__courier');
+var deliverInStoreBlock = document.querySelector('.deliver__store');
+var deliverByCourierBlock = document.querySelector('.deliver__courier');
 
 var amountParams = {
   MIN: 0,
@@ -241,15 +251,6 @@ var createOrderElements = function (array) {
   return orderFragment;
 };
 
-var catalogGoodsArray = renderGoodsArray(CATALOG_CARDS_LIST_LENGTH);
-catalogCards.appendChild(createCatalogElements());
-catalogCards.classList.remove('catalog__cards--load');
-catalogLoad.classList.add('visually-hidden');
-cartBlock.classList.remove('goods__cards--empty');
-emptyBlock.classList.add('visually-hidden');
-
-var order = [];
-var headerBasket = document.querySelector('.main-header__basket');
 var addGoodToCart = function (object) {
   var orderObject = Object.assign({}, object);
   var index = checkGoodsInOrder(order, object.name);
@@ -283,3 +284,35 @@ var getWordEnding = function (number, titles) {
   return titles[(number % 100 > 4 && number % 100 < 20) ?
     2 : cases[(number % 10 < 5) ? number % 10 : 5]];
 };
+
+var catalogGoodsArray = renderGoodsArray(CATALOG_CARDS_LIST_LENGTH);
+catalogCards.appendChild(createCatalogElements());
+catalogCards.classList.remove('catalog__cards--load');
+catalogLoad.classList.add('visually-hidden');
+cartBlock.classList.remove('goods__cards--empty');
+emptyBlock.classList.add('visually-hidden');
+
+paymentMethodCardBtn.addEventListener('click', function () {
+  if (paymentByCardBlock.classList.contains('visually-hidden')) {
+    paymentByCardBlock.classList.remove('visually-hidden');
+    paymentByCashBlock.classList.add('visually-hidden');
+  }
+});
+paymentMethodCashBtn.addEventListener('click', function () {
+  if (paymentByCashBlock.classList.contains('visually-hidden')) {
+    paymentByCashBlock.classList.remove('visually-hidden');
+    paymentByCardBlock.classList.add('visually-hidden');
+  }
+});
+deliverInStoreBtn.addEventListener('click', function () {
+  if (deliverInStoreBlock.classList.contains('visually-hidden')) {
+    deliverInStoreBlock.classList.remove('visually-hidden');
+    deliverByCourierBlock.classList.add('visually-hidden');
+  }
+});
+deliverByCourierBtn.addEventListener('click', function () {
+  if (deliverByCourierBlock.classList.contains('visually-hidden')) {
+    deliverByCourierBlock.classList.remove('visually-hidden');
+    deliverInStoreBlock.classList.add('visually-hidden');
+  }
+});
