@@ -1,7 +1,6 @@
 'use strict';
 
 var CATALOG_CARDS_LIST_LENGTH = 26;
-var ORDER_CARDS_LIST_LENGTH = 3;
 var catalogCards = document.querySelector('.catalog__cards');
 var catalogLoad = document.querySelector('.catalog__load');
 var cardTemplate = document.querySelector('#card').content.querySelector('article');
@@ -188,6 +187,7 @@ var getRatingStars = function (obj) {
 var renderCatalogDomElements = function (object) {
   var catalogElement = cardTemplate.cloneNode(true);
   var goodRating = catalogElement.querySelector('.stars__rating');
+  var btn = catalogElement.querySelector('.card__btn');
   catalogElement.classList.add(getAvailability(object));
   catalogElement.querySelector('.card__title').textContent = object.name;
   catalogElement.querySelector('.card__img').src = object.picture;
@@ -201,6 +201,10 @@ var renderCatalogDomElements = function (object) {
   catalogElement.querySelector('.card__characteristic').textContent = (object.nutritionFacts.sugar ?
     'Содержит сахар, ' : 'Без сахара, ') + object.nutritionFacts.energy + ' ккал';
   catalogElement.querySelector('.card__composition-list').textContent = object.nutritionFacts.contents;
+  btn.addEventListener('click', function () {
+    addGoodToCart(object);
+    object.amount -= 1;
+  });
   return catalogElement;
 };
 
@@ -209,6 +213,7 @@ var renderOrderDomElements = function (object) {
   orderElement.querySelector('.card-order__title').textContent = object.name;
   orderElement.querySelector('.card-order__img').src = object.picture;
   orderElement.querySelector('.card-order__img').alt = object.name;
+  orderElement.querySelector('.card-order__count').value = object.orderAmount;
   var amount = orderElement.querySelector('.card-order__count').value;
   orderElement.querySelector('.card-order__price').textContent = amount * object.price;
   return orderElement;
@@ -223,20 +228,54 @@ var createCatalogElements = function () {
   return catalogFragment;
 };
 
-var createOrderElements = function () {
+var createOrderElements = function (array) {
   var orderFragment = document.createDocumentFragment();
-  for (var i = 0; i < orderGoodsArray.length; i++) {
-    var element = renderOrderDomElements(orderGoodsArray[i]);
+  for (var i = 0; i < array.length; i++) {
+    var element = renderOrderDomElements(array[i]);
     orderFragment.appendChild(element);
   }
   return orderFragment;
 };
 
 var catalogGoodsArray = renderGoodsArray(CATALOG_CARDS_LIST_LENGTH);
-var orderGoodsArray = renderGoodsArray(ORDER_CARDS_LIST_LENGTH);
 catalogCards.appendChild(createCatalogElements());
 catalogCards.classList.remove('catalog__cards--load');
 catalogLoad.classList.add('visually-hidden');
 cartBlock.classList.remove('goods__cards--empty');
 emptyBlock.classList.add('visually-hidden');
-cartBlock.appendChild(createOrderElements());
+
+var order = [];
+var headerBasket = document.querySelector('.main-header__basket');
+var addGoodToCart = function (object) {
+  var orderObject = Object.assign({}, object);
+  var index = checkGoodsInOrder(order, object.name);
+  if (index === undefined && object.amount > 0) {
+    var orderGoodsArray = [];
+    orderObject.orderAmount = 1;
+    orderObject.amount = null;
+    orderGoodsArray[orderGoodsArray.length] = orderObject;
+    cartBlock.appendChild(createOrderElements(orderGoodsArray));
+    order[order.length] = orderGoodsArray[0];
+    headerBasket.textContent = 'В корзине: ' + order.length + ' ' + getWordEnding(order.length, ['товар', 'товара', 'товаров']);
+  } else if (object.amount > 0) {
+    var currentAmount = order[index].orderAmount;
+    order[index].orderAmount = currentAmount + 1;
+    cartBlock.innerHTML = '';
+    cartBlock.appendChild(createOrderElements(order));
+  }
+};
+
+var checkGoodsInOrder = function (array, objectName) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i].name === objectName) {
+      var index = i;
+    }
+  }
+  return index;
+};
+
+var getWordEnding = function (number, titles) {
+  var cases = [2, 0, 1, 1, 1, 2];
+  return titles[(number % 100 > 4 && number % 100 < 20) ?
+    2 : cases[(number % 10 < 5) ? number % 10 : 5]];
+};
