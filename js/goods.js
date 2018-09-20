@@ -188,6 +188,7 @@ var renderCatalogDomElements = function (object) {
   var catalogElement = cardTemplate.cloneNode(true);
   var goodRating = catalogElement.querySelector('.stars__rating');
   var btn = catalogElement.querySelector('.card__btn');
+  var btnFavorite = catalogElement.querySelector('.card__btn-favorite');
   catalogElement.classList.add(getAvailability(object));
   catalogElement.querySelector('.card__title').textContent = object.name;
   catalogElement.querySelector('.card__img').src = object.picture;
@@ -204,6 +205,9 @@ var renderCatalogDomElements = function (object) {
   btn.addEventListener('click', function () {
     addGoodToCart(object);
     object.amount -= 1;
+  });
+  btnFavorite.addEventListener('click', function () {
+    btnFavorite.classList.toggle('card__btn-favorite--selected');
   });
   return catalogElement;
 };
