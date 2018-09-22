@@ -302,37 +302,26 @@ var getPriceRangePinCoordinate = function (evtTarget) {
   return pinValue;
 };
 
+var onDeliveryTypeBtnClick = function () {
+  deliverByCourierBlock.classList.toggle('visually-hidden');
+  deliverInStoreBlock.classList.toggle('visually-hidden');
+};
+
+var onPaymentTypeBtnClick = function () {
+  paymentByCashBlock.classList.toggle('visually-hidden');
+  paymentByCardBlock.classList.toggle('visually-hidden');
+};
+
 var catalogGoodsArray = renderGoodsArray(CATALOG_CARDS_LIST_LENGTH);
 catalogCards.appendChild(createCatalogElements());
 catalogCards.classList.remove('catalog__cards--load');
 catalogLoad.classList.add('visually-hidden');
 cartBlock.classList.remove('goods__cards--empty');
 emptyBlock.classList.add('visually-hidden');
-
-paymentMethodCardBtn.addEventListener('click', function () {
-  if (paymentByCardBlock.classList.contains('visually-hidden')) {
-    paymentByCardBlock.classList.remove('visually-hidden');
-    paymentByCashBlock.classList.add('visually-hidden');
-  }
-});
-paymentMethodCashBtn.addEventListener('click', function () {
-  if (paymentByCashBlock.classList.contains('visually-hidden')) {
-    paymentByCashBlock.classList.remove('visually-hidden');
-    paymentByCardBlock.classList.add('visually-hidden');
-  }
-});
-deliverInStoreBtn.addEventListener('click', function () {
-  if (deliverInStoreBlock.classList.contains('visually-hidden')) {
-    deliverInStoreBlock.classList.remove('visually-hidden');
-    deliverByCourierBlock.classList.add('visually-hidden');
-  }
-});
-deliverByCourierBtn.addEventListener('click', function () {
-  if (deliverByCourierBlock.classList.contains('visually-hidden')) {
-    deliverByCourierBlock.classList.remove('visually-hidden');
-    deliverInStoreBlock.classList.add('visually-hidden');
-  }
-});
+deliverByCourierBtn.addEventListener('click', onDeliveryTypeBtnClick);
+deliverInStoreBtn.addEventListener('click', onDeliveryTypeBtnClick);
+paymentMethodCashBtn.addEventListener('click', onPaymentTypeBtnClick);
+paymentMethodCardBtn.addEventListener('click', onPaymentTypeBtnClick);
 priceRangeFilterBtnLeft.addEventListener('mouseup', function (evt) {
   var value = getPriceRangePinCoordinate(evt.target);
   priceRangeMinPinValue.textContent = value;
