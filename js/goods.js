@@ -10,10 +10,14 @@ var orderTemplate = document.querySelector('#card-order').content.querySelector(
 var cartBlock = document.querySelector('.goods__cards');
 var emptyBlock = document.querySelector('.goods__card-empty');
 var headerBasket = document.querySelector('.main-header__basket');
+var deliverTargetClickId = 'deliver__store';
+var paymentClickId = 'payment__card';
+var paymentToggleTab = document.querySelector('.payment__method');
 var paymentMethodCardBtn = document.querySelector('#payment__card');
 var paymentMethodCashBtn = document.querySelector('#payment__cash');
 var paymentByCardBlock = document.querySelector('.payment__card-wrap');
 var paymentByCashBlock = document.querySelector('.payment__cash-wrap');
+var deliverToggleTab = document.querySelector('.deliver__toggle');
 var deliverInStoreBtn = document.querySelector('#deliver__store');
 var deliverByCourierBtn = document.querySelector('#deliver__courier');
 var deliverInStoreBlock = document.querySelector('.deliver__store');
@@ -302,29 +306,13 @@ var getPriceRangePinCoordinate = function (evtTarget) {
   return pinValue;
 };
 
-var onOrderFormTabBtnClick = function (firstBlock, secondBlock) {
-  firstBlock.classList.toggle('visually-hidden');
-  secondBlock.classList.toggle('visually-hidden');
-};
-
 var catalogGoodsArray = renderGoodsArray(CATALOG_CARDS_LIST_LENGTH);
 catalogCards.appendChild(createCatalogElements());
 catalogCards.classList.remove('catalog__cards--load');
 catalogLoad.classList.add('visually-hidden');
 cartBlock.classList.remove('goods__cards--empty');
 emptyBlock.classList.add('visually-hidden');
-deliverByCourierBtn.addEventListener('click', function () {
-  onOrderFormTabBtnClick(deliverByCourierBlock, deliverInStoreBlock);
-});
-deliverInStoreBtn.addEventListener('click', function () {
-  onOrderFormTabBtnClick(deliverByCourierBlock, deliverInStoreBlock);
-});
-paymentMethodCashBtn.addEventListener('click', function () {
-  onOrderFormTabBtnClick(paymentByCashBlock, paymentByCardBlock);
-});
-paymentMethodCardBtn.addEventListener('click', function () {
-  onOrderFormTabBtnClick(paymentByCashBlock, paymentByCardBlock);
-});
+
 priceRangeFilterBtnLeft.addEventListener('mouseup', function (evt) {
   var value = getPriceRangePinCoordinate(evt.target);
   priceRangeMinPinValue.textContent = value;
@@ -332,4 +320,22 @@ priceRangeFilterBtnLeft.addEventListener('mouseup', function (evt) {
 priceRangeFilterBtnRight.addEventListener('mouseup', function (evt) {
   var value = getPriceRangePinCoordinate(evt.target);
   priceRangeMaxPinValue.textContent = value;
+});
+
+deliverToggleTab.addEventListener('click', function (evt) {
+  if ((evt.target === deliverInStoreBtn || evt.target === deliverByCourierBtn)
+  && deliverTargetClickId !== evt.target.id) {
+    deliverInStoreBlock.classList.toggle('visually-hidden');
+    deliverByCourierBlock.classList.toggle('visually-hidden');
+    deliverTargetClickId = evt.target.id;
+  }
+});
+
+paymentToggleTab.addEventListener('click', function (evt) {
+  if ((evt.target === paymentMethodCardBtn || evt.target === paymentMethodCashBtn)
+  && paymentClickId !== evt.target.id) {
+    paymentByCardBlock.classList.toggle('visually-hidden');
+    paymentByCashBlock.classList.toggle('visually-hidden');
+    paymentClickId = evt.target.id;
+  }
 });
