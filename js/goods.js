@@ -302,14 +302,9 @@ var getPriceRangePinCoordinate = function (evtTarget) {
   return pinValue;
 };
 
-var onDeliveryTypeBtnClick = function () {
-  deliverByCourierBlock.classList.toggle('visually-hidden');
-  deliverInStoreBlock.classList.toggle('visually-hidden');
-};
-
-var onPaymentTypeBtnClick = function () {
-  paymentByCashBlock.classList.toggle('visually-hidden');
-  paymentByCardBlock.classList.toggle('visually-hidden');
+var onOrderFormTabBtnClick = function (firstBlock, secondBlock) {
+  firstBlock.classList.toggle('visually-hidden');
+  secondBlock.classList.toggle('visually-hidden');
 };
 
 var catalogGoodsArray = renderGoodsArray(CATALOG_CARDS_LIST_LENGTH);
@@ -318,10 +313,18 @@ catalogCards.classList.remove('catalog__cards--load');
 catalogLoad.classList.add('visually-hidden');
 cartBlock.classList.remove('goods__cards--empty');
 emptyBlock.classList.add('visually-hidden');
-deliverByCourierBtn.addEventListener('click', onDeliveryTypeBtnClick);
-deliverInStoreBtn.addEventListener('click', onDeliveryTypeBtnClick);
-paymentMethodCashBtn.addEventListener('click', onPaymentTypeBtnClick);
-paymentMethodCardBtn.addEventListener('click', onPaymentTypeBtnClick);
+deliverByCourierBtn.addEventListener('click', function () {
+  onOrderFormTabBtnClick(deliverByCourierBlock, deliverInStoreBlock);
+});
+deliverInStoreBtn.addEventListener('click', function () {
+  onOrderFormTabBtnClick(deliverByCourierBlock, deliverInStoreBlock);
+});
+paymentMethodCashBtn.addEventListener('click', function () {
+  onOrderFormTabBtnClick(paymentByCashBlock, paymentByCardBlock);
+});
+paymentMethodCardBtn.addEventListener('click', function () {
+  onOrderFormTabBtnClick(paymentByCashBlock, paymentByCardBlock);
+});
 priceRangeFilterBtnLeft.addEventListener('mouseup', function (evt) {
   var value = getPriceRangePinCoordinate(evt.target);
   priceRangeMinPinValue.textContent = value;
