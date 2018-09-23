@@ -191,6 +191,7 @@
     catalogElement.id = object.id;
     catalogElement.addEventListener('click', function (evt) {
       if (evt.target === btn && object.amount > 0) {
+        evt.preventDefault();
         window.addGoodToCart(object);
         object.amount -= 1;
       }

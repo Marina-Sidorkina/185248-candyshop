@@ -17,6 +17,7 @@
     orderElement.querySelector('.card-order__price').textContent = amount * object.price;
     return orderElement;
   };
+
   var createOrderElements = function (array) {
     var orderFragment = document.createDocumentFragment();
     for (var i = 0; i < array.length; i++) {
