@@ -6,6 +6,7 @@
   var catalogCards = document.querySelector('.catalog__cards');
   var catalogLoad = document.querySelector('.catalog__load');
   var cardTemplate = document.querySelector('#card').content.querySelector('article');
+  var favoriteGoods = {};
 
   var amountParams = {
     MIN: 0,
@@ -210,6 +211,11 @@
     btnFavorite.addEventListener('click', function (evt) {
       evt.preventDefault();
       btnFavorite.classList.toggle('card__btn-favorite--selected');
+      if (btnFavorite.classList.contains('card__btn-favorite--selected')) {
+        favoriteGoods[object.name] = object;
+      } else {
+        delete favoriteGoods[object.name];
+      }
     });
     return catalogElement;
   };
