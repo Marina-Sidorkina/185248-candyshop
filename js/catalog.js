@@ -188,12 +188,10 @@
     var goodRating = catalogElement.querySelector('.stars__rating');
     var btn = catalogElement.querySelector('.card__btn');
     var btnFavorite = catalogElement.querySelector('.card__btn-favorite');
-    catalogElement.id = object.id;
     catalogElement.addEventListener('click', function (evt) {
-      if (evt.target === btn && object.amount > 0) {
+      if (evt.target === btn) {
         evt.preventDefault();
         window.addGoodToCart(object);
-        object.amount -= 1;
       }
     });
     catalogElement.classList.add(getAvailability(object));
@@ -209,7 +207,8 @@
     catalogElement.querySelector('.card__characteristic').textContent = (object.nutritionFacts.sugar ?
       'Содержит сахар, ' : 'Без сахара, ') + object.nutritionFacts.energy + ' ккал';
     catalogElement.querySelector('.card__composition-list').textContent = object.nutritionFacts.contents;
-    btnFavorite.addEventListener('click', function () {
+    btnFavorite.addEventListener('click', function (evt) {
+      evt.preventDefault();
       btnFavorite.classList.toggle('card__btn-favorite--selected');
     });
     return catalogElement;
@@ -219,7 +218,6 @@
     var catalogFragment = document.createDocumentFragment();
     for (var i = 0; i < catalogGoodsArray.length; i++) {
       var element = renderCatalogDomElements(catalogGoodsArray[i]);
-      element.id = element.querySelector('.card__title').textContent + '_' + i;
       catalogFragment.appendChild(element);
     }
     return catalogFragment;
