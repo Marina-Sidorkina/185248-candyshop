@@ -192,7 +192,8 @@
     catalogElement.addEventListener('click', function (evt) {
       if (evt.target === btn) {
         evt.preventDefault();
-        window.addGoodToCart(object);
+        window.order.addGoodToCart(object);
+        window.order.enableFormInputs();
       }
     });
     catalogElement.classList.add(getAvailability(object));
