@@ -121,13 +121,14 @@
       item.disabled = false;
       submitBtn.disabled = false;
     });
+    window.tabs.setInputsAbility(window.tabs.deliverByCourierBlockInputs, true);
   };
 
   window.order = {
     addGoodToCart: addGoodToCart,
-    enableOrderFormInputs: enableOrderFormInputs,
-    orderForm: orderForm,
-    orderFormInputs: orderFormInputs
+    enableFormInputs: enableOrderFormInputs,
+    form: orderForm,
+    formInputs: orderFormInputs
   };
 
   disableOrderFormInputs();

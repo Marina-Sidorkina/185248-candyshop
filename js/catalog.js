@@ -193,7 +193,7 @@
       if (evt.target === btn) {
         evt.preventDefault();
         window.order.addGoodToCart(object);
-        window.order.enableOrderFormInputs();
+        window.order.enableFormInputs();
       }
     });
     catalogElement.classList.add(getAvailability(object));

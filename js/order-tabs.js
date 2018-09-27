@@ -16,6 +16,12 @@
   var deliverByCourierBlock = document.querySelector('.deliver__courier');
   var deliverByCourierBlockInputs = deliverByCourierBlock.querySelectorAll('input');
 
+  var setInputsAbility = function (inputs, abilityStatus) {
+    inputs.forEach(function (item) {
+      item.disabled = abilityStatus;
+    });
+  };
+
   paymentToggleTab.addEventListener('click', function (evt) {
     if ((evt.target === paymentMethodCardBtn || evt.target === paymentMethodCashBtn)
     && paymentClickTargetId !== evt.target.id) {
@@ -24,13 +30,9 @@
       paymentClickTargetId = evt.target.id;
     }
     if (paymentByCardBlock.classList.contains('visually-hidden')) {
-      paymentByCardBlockInputs.forEach(function (item) {
-        item.disabled = true;
-      });
+      setInputsAbility(paymentByCardBlockInputs, true);
     } else {
-      paymentByCardBlockInputs.forEach(function (item) {
-        item.disabled = false;
-      });
+      setInputsAbility(paymentByCardBlockInputs, false);
     }
   });
 
@@ -41,18 +43,15 @@
       deliverByCourierBlock.classList.toggle('visually-hidden');
       deliverClickTargetId = evt.target.id;
     }
-    if (deliverClickTargetId === '#deliver__courier') {
-      deliverByCourierBlockInputs.forEach(function (item) {
-        item.disabled = false;
-      });
+    if (deliverClickTargetId === 'deliver__courier') {
+      setInputsAbility(deliverByCourierBlockInputs, false);
     } else {
-      deliverByCourierBlockInputs.forEach(function (item) {
-        item.disabled = true;
-      });
+      setInputsAbility(deliverByCourierBlockInputs, true);
     }
   });
 
-  deliverByCourierBlockInputs.forEach(function (item) {
-    item.disabled = true;
-  });
+  window.tabs = {
+    setInputsAbility: setInputsAbility,
+    deliverByCourierBlockInputs: deliverByCourierBlockInputs
+  };
 })();

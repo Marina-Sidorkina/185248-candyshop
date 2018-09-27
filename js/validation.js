@@ -6,15 +6,16 @@
   var cardNumberInput = paymentInputsBlock.querySelector('input[name = "card-number"]');
   var dateInput = paymentInputsBlock.querySelector('input[name = "card-date"]');
   var cvcInput = paymentInputsBlock.querySelector('input[name = "card-cvc"]');
+  var nameInput = paymentInputsBlock.querySelector('input[name = "cardholder"]');
   var paymentInputs = paymentInputsBlock.querySelectorAll('input');
   var cardStatus = document.querySelector('.payment__card-status');
   var storeImg = document.querySelector('.deliver__store-map-img');
-  var metroStationsBlock = document.querySelector('.deliver__stores');
-  var metroStations = metroStationsBlock.querySelectorAll('li');
+  var stationsBlock = document.querySelector('.deliver__stores');
+  var stations = stationsBlock.querySelectorAll('li');
   var modalApproved = document.querySelector('.modal--approved');
 
   var switchImage = function () {
-    metroStations.forEach(function (item) {
+    stations.forEach(function (item) {
       item.addEventListener('click', function () {
         var label = item.querySelector('label');
         var input = item.querySelector('input');
@@ -23,6 +24,7 @@
       });
     });
   };
+
   var checkLuhnAlgorithm = function (string) {
     string = string.replace(/\s/g, '');
     var cardNumber = string.split('').map(Number);
@@ -42,67 +44,82 @@
     return sum % 10 === 0 ? true : false;
   };
 
-  // Не понимаю, как сделать так, чтобы функция работала и при копипасте...
-  cardNumberInput.onkeypress = function () {
-    if (cardNumberInput.value.length === 4 || cardNumberInput.value.length === 9 || cardNumberInput.value.length === 14) {
-      cardNumberInput.value += ' ';
+  var onCardNumberInputInvalid = function (evt) {
+    if (evt.target.validity.patternMismatch || evt.target.validity.tooShort) {
+      evt.target.setCustomValidity('Введите 16 цифр номера банковской карты в формате ХХХХ ХХХХ ХХХХ ХХХХ');
+    } else if (checkLuhnAlgorithm(evt.target.value) === false) {
+      evt.target.setCustomValidity('Неправильный номер банковской карты');
+    } else {
+      evt.target.setCustomValidity('');
+    }
+    if (!cardNumberInput.checkValidity()) {
+      cardStatus.textContent = 'Не определён';
+    } else {
+      checkValidity();
     }
   };
 
-  var onInputInvalidFunctions = {
-    cardNumberInput: function (evt) {
-      if (evt.target.validity.patternMismatch || evt.target.validity.tooShort) {
-        evt.target.setCustomValidity('Введите 16 цифр номера банковской карты в формате ХХХХ ХХХХ ХХХХ ХХХХ');
-      } else if (checkLuhnAlgorithm(evt.target.value) === false) {
-        evt.target.setCustomValidity('Неправильный номер банковской карты');
-      } else {
-        evt.target.setCustomValidity('');
-      }
-    },
-    dateInput: function (evt) {
-      if (evt.target.validity.patternMismatch || evt.target.validity.tooShort) {
-        evt.target.setCustomValidity('Введите срок действия карты в формате мм/гг');
-      } else {
-        evt.target.setCustomValidity('');
-      }
-    },
-    cvcInput: function (evt) {
-      if (evt.target.validity.patternMismatch || evt.target.validity.tooShort) {
-        evt.target.setCustomValidity('Введите CVC в указанном формате: трёхзначное число с диапазоном значений от 100 до 999');
-      } else {
-        evt.target.setCustomValidity('');
-      }
+  var onDateInputInvalid = function (evt) {
+    if (evt.target.validity.patternMismatch || evt.target.validity.tooShort) {
+      evt.target.setCustomValidity('Введите срок действия карты в формате мм/гг');
+    } else {
+      evt.target.setCustomValidity('');
+    }
+    if (!dateInput.checkValidity()) {
+      cardStatus.textContent = 'Не определён';
+    } else {
+      checkValidity();
+    }
+  };
+
+  var onCvcInputInvalid = function (evt) {
+    if (evt.target.validity.patternMismatch || evt.target.validity.tooShort) {
+      evt.target.setCustomValidity('Введите CVC в указанном формате: трёхзначное число с диапазоном значений от 100 до 999');
+    } else {
+      evt.target.setCustomValidity('');
+    }
+    if (!cvcInput.checkValidity()) {
+      cardStatus.textContent = 'Не определён';
+    } else {
+      checkValidity();
     }
   };
 
   var checkValidity = function () {
     for (var i = 0; i < paymentInputs.length; i++) {
-      var validity = false;
-      if (paymentInputs[i].checkValidity()) {
-        validity = true;
+      if (paymentInputs[i].checkValidity() && !paymentInputs[i].disabled) {
+        cardStatus.textContent = 'Одобрен';
       } else {
-        validity = false;
+        cardStatus.textContent = 'Не определён';
       }
-    }
-    if (validity) {
-      cardStatus.textContent = 'Одобрен';
-    } else {
-      cardStatus.textContent = 'Не определен';
     }
   };
 
-  var submitForm = function () {
+  var onFormSubmit = function () {
     if (buyForm.checkValidity()) {
       modalApproved.classList.remove('modal--hidden');
     }
   };
 
-  buyForm.addEventListener('submit', submitForm);
+  var onCardNumberInputKeypress = function () {
+    if (cardNumberInput.value.length === 4 || cardNumberInput.value.length === 9 || cardNumberInput.value.length === 14) {
+      cardNumberInput.value += ' ';
+    }
+  };
 
-  cardStatus.textContent = 'Не определён';
-  checkValidity();
+  var onDateInputKeypress = function () {
+    if (dateInput.value.length === 2) {
+      dateInput.value += '/';
+    }
+  };
+
   switchImage();
-  cardNumberInput.addEventListener('input', onInputInvalidFunctions.cardNumberInput);
-  dateInput.addEventListener('input', onInputInvalidFunctions.dateInput);
-  cvcInput.addEventListener('input', onInputInvalidFunctions.cvcInput);
+  cardStatus.textContent = 'Не определён';
+  buyForm.addEventListener('submit', onFormSubmit);
+  cardNumberInput.addEventListener('input', onCardNumberInputInvalid);
+  dateInput.addEventListener('input', onDateInputInvalid);
+  cvcInput.addEventListener('input', onCvcInputInvalid);
+  nameInput.addEventListener('input', checkValidity);
+  cardNumberInput.addEventListener('keypress', onCardNumberInputKeypress);
+  dateInput.addEventListener('keypress', onDateInputKeypress);
 })();
