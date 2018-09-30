@@ -6,7 +6,7 @@
   var catalogCards = document.querySelector('.catalog__cards');
   var catalogLoad = document.querySelector('.catalog__load');
   var cardTemplate = document.querySelector('#card').content.querySelector('article');
-  var favoriteGoods = {};
+  var favoriteGoods = [];
 
   var amountParams = {
     MIN: 0,
@@ -213,9 +213,13 @@
       evt.preventDefault();
       btnFavorite.classList.toggle('card__btn-favorite--selected');
       if (btnFavorite.classList.contains('card__btn-favorite--selected')) {
-        favoriteGoods[object.name] = object;
+        favoriteGoods[favoriteGoods.length] = object;
       } else {
-        delete favoriteGoods[object.name];
+        for (var i = 0; i < favoriteGoods.length; i++) {
+          if (favoriteGoods[i].name === object.name) {
+            favoriteGoods.splice(i, 1);
+          }
+        }
       }
     });
     return catalogElement;
@@ -235,4 +239,11 @@
   catalogCards.classList.remove('catalog__cards--load');
   catalogLoad.classList.add('visually-hidden');
 
+  window.catalog = {
+    goodsArray: catalogGoodsArray,
+    favoriteGoods: favoriteGoods,
+    cards: catalogCards,
+    createElements: createCatalogElements,
+    renderDomElements: renderCatalogDomElements
+  };
 })();
