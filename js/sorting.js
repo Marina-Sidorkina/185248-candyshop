@@ -38,7 +38,8 @@
     var array = window.catalog.goodsArray.filter(function (item) {
       return (checkSugar(item));
     });
-    return array;
+    window.catalog.cards.innerHTML = '';
+    window.catalog.cards.appendChild(createElements(array));
   };
 
   filterFavorite.addEventListener('change', function () {
@@ -63,5 +64,5 @@
     }
   });
 
-  filterInStock.addEventListener('change', filterGoods);
+  filterSugarFree.addEventListener('change', filterGoods);
 })();
