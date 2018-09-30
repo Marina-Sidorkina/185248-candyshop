@@ -238,12 +238,4 @@
   catalogCards.appendChild(createCatalogElements());
   catalogCards.classList.remove('catalog__cards--load');
   catalogLoad.classList.add('visually-hidden');
-
-  window.catalog = {
-    goodsArray: catalogGoodsArray,
-    favoriteGoods: favoriteGoods,
-    cards: catalogCards,
-    createElements: createCatalogElements,
-    renderDomElements: renderCatalogDomElements
-  };
 })();
