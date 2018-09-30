@@ -22,6 +22,11 @@
     return pinValue;
   };
 
+  var fillTheLine = function () {
+    fillLine.style.left = priceRangeFilterBtnLeft.offsetLeft + 'px';
+    fillLine.style.right = priceRangeFilterCoordinate.width - priceRangeFilterBtnRight.offsetLeft + 'px';
+  };
+
   var onFilterLeftBtnMouseDown = function (evt) {
     var startCoord = evt.clientX;
     var secondBtnX = priceRangeFilterBtnRight.getBoundingClientRect().x;
@@ -32,9 +37,8 @@
         var shift = startCoord - moveEvt.clientX;
         startCoord = moveEvt.clientX;
         evt.target.style.left = (evt.target.offsetLeft - shift) + 'px';
-        fillLine.style.left = priceRangeFilterBtnLeft.offsetLeft + 'px';
-        fillLine.style.right = priceRangeFilterCoordinate.width - priceRangeFilterBtnRight.offsetLeft + 'px';
         priceRangeMinPinValue.textContent = getPriceRangePinCoordinate(evt.target);
+        fillTheLine();
       }
     };
     var onMouseUp = function (upEvt) {
@@ -57,9 +61,8 @@
         var shift = startCoord - moveEvt.clientX;
         startCoord = moveEvt.clientX;
         evt.target.style.left = (evt.target.offsetLeft - shift) + 'px';
-        fillLine.style.left = priceRangeFilterBtnLeft.offsetLeft + 'px';
-        fillLine.style.right = priceRangeFilterCoordinate.width - priceRangeFilterBtnRight.offsetLeft + 'px';
         priceRangeMaxPinValue.textContent = getPriceRangePinCoordinate(evt.target);
+        fillTheLine();
       }
     };
     var onMouseUp = function (upEvt) {
