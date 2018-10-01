@@ -11,6 +11,26 @@
   var orderFormInputs = orderForm.querySelectorAll('input');
   var submitBtn = document.querySelector('.buy__submit-btn');
 
+  var onDecreaseBtnClick = function (object, element) {
+    if (object.orderAmount === 1) {
+      onOrderCardCloseClick(object);
+      headerBasket.textContent = 'В корзине: ' + order.length + ' ' + window.utils.getDeclension(order.length, ['товар', 'товара', 'товаров']);
+      if (!order.length) {
+        disableOrderFormInputs();
+      }
+    } else {
+      object.orderAmount--;
+      element.querySelector('.card-order__count').value = object.orderAmount;
+    }
+  };
+
+  var onIncreaseBtnClick = function (object, element) {
+    if (object.amount > object.orderAmount) {
+      object.orderAmount++;
+      element.querySelector('.card-order__count').value = object.orderAmount;
+    }
+  };
+
   var renderOrderDomElements = function (object) {
     var orderElement = orderTemplate.cloneNode(true);
     var orderCardClose = orderElement.querySelector('.card-order__close');
@@ -19,28 +39,16 @@
     orderCardClose.addEventListener('click', function (evt) {
       evt.preventDefault();
       onOrderCardCloseClick(object);
-      headerBasket.textContent = 'В корзине: ' + order.length + ' ' + getDeclension(order.length, ['товар', 'товара', 'товаров']);
+      headerBasket.textContent = 'В корзине: ' + order.length + ' ' + window.utils.getDeclension(order.length, ['товар', 'товара', 'товаров']);
       if (!order.length) {
         disableOrderFormInputs();
       }
     });
     decreaseBtn.addEventListener('click', function () {
-      if (object.orderAmount === 1) {
-        onOrderCardCloseClick(object);
-        headerBasket.textContent = 'В корзине: ' + order.length + ' ' + getDeclension(order.length, ['товар', 'товара', 'товаров']);
-        if (!order.length) {
-          disableOrderFormInputs();
-        }
-      } else {
-        object.orderAmount--;
-        orderElement.querySelector('.card-order__count').value = object.orderAmount;
-      }
+      onDecreaseBtnClick(object, orderElement);
     });
     increaseBtn.addEventListener('click', function () {
-      if (object.amount > object.orderAmount) {
-        object.orderAmount++;
-        orderElement.querySelector('.card-order__count').value = object.orderAmount;
-      }
+      onIncreaseBtnClick(object, orderElement);
     });
     orderElement.querySelector('.card-order__title').textContent = object.name;
     orderElement.querySelector('.card-order__img').src = object.picture;
@@ -72,7 +80,7 @@
       orderGoodsArray[orderGoodsArray.length] = orderObject;
       cartBlock.appendChild(createOrderElements(orderGoodsArray));
       order[order.length] = orderGoodsArray[0];
-      headerBasket.textContent = 'В корзине: ' + order.length + ' ' + getDeclension(order.length, ['товар', 'товара', 'товаров']);
+      headerBasket.textContent = 'В корзине: ' + order.length + ' ' + window.utils.getDeclension(order.length, ['товар', 'товара', 'товаров']);
     } else if (object.amount > order[index].orderAmount) {
       var currentAmount = order[index].orderAmount;
       order[index].orderAmount = currentAmount + 1;
@@ -90,12 +98,6 @@
       }
     }
     return index;
-  };
-
-  var getDeclension = function (number, titles) {
-    var cases = [2, 0, 1, 1, 1, 2];
-    return titles[(number % 100 > 4 && number % 100 < 20) ?
-      2 : cases[(number % 10 < 5) ? number % 10 : 5]];
   };
 
   var onOrderCardCloseClick = function (object) {
@@ -126,9 +128,7 @@
 
   window.order = {
     addGoodToCart: addGoodToCart,
-    enableFormInputs: enableOrderFormInputs,
-    form: orderForm,
-    formInputs: orderFormInputs
+    enableFormInputs: enableOrderFormInputs
   };
 
   disableOrderFormInputs();
