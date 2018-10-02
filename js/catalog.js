@@ -1,12 +1,12 @@
 'use strict';
 
 (function () {
-  var CARDS_AMOUNT = 26;
   var catalogCards = document.querySelector('.catalog__cards');
   var catalogLoad = document.querySelector('.catalog__load');
   var cardTemplate = document.querySelector('#card').content.querySelector('article');
   var favoriteGoods = [];
-  var catalogGoodsArray = window.renderGoodsArray(CARDS_AMOUNT);
+  var catalog = listFromServer;
+  var listFromServer = [];
 
   var ratingClasses = {
     1: '--one',
@@ -43,7 +43,7 @@
     });
     catalogElement.classList.add(getAvailability(object));
     catalogElement.querySelector('.card__title').textContent = object.name;
-    catalogElement.querySelector('.card__img').src = object.picture;
+    catalogElement.querySelector('.card__img').src = 'img/cards/' + object.picture;
     catalogElement.querySelector('.card__img').alt = object.name;
     catalogElement.querySelector('.card__price').textContent = object.price + ' ';
     catalogElement.querySelector('.card__price').appendChild(window.utils.createTagElement('span', 'card__currency', '₽'));
@@ -79,7 +79,30 @@
     return catalogFragment;
   };
 
-  catalogCards.appendChild(createCatalogElements(catalogGoodsArray));
-  catalogCards.classList.remove('catalog__cards--load');
-  catalogLoad.classList.add('visually-hidden');
+  var replaceCardsInCatalog = function (array) {
+    catalogCards.innerHTML = '';
+    catalogCards.appendChild(createCatalogElements(array));
+  };
+
+  var checkListFromServerPrice = function () {
+    var array = listFromServer.filter(function (item) {
+      return (window.checkPriceRange(item));
+    });
+    catalog = array;
+    replaceCardsInCatalog(array);
+  };
+
+  var onLoad = function (array) {
+    listFromServer = array;
+    catalog = listFromServer.filter(function (item) {
+      return (window.checkPriceRange(item));
+    });
+    catalogCards.appendChild(createCatalogElements(catalog));
+    catalogCards.classList.remove('catalog__cards--load');
+    catalogLoad.classList.add('visually-hidden');
+  };
+
+  window.backend.loadData(onLoad, window.backend.onLoadAndSendDataError);
+
+  window.checkListFromServerPrice = checkListFromServerPrice;
 })();

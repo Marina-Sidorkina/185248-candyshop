@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var ESC = 27;
   var getRandomNumber = function (min, max) {
     return Math.floor(Math.random() * (max - min) + min);
   };
@@ -26,6 +27,7 @@
     getRandomNumber: getRandomNumber,
     getRandomBoolean: getRandomBoolean,
     createTagElement: createTagElement,
-    getDeclension: getDeclension
+    getDeclension: getDeclension,
+    ESC: ESC
   };
 })();

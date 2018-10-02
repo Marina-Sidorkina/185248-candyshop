@@ -13,6 +13,7 @@
   var stationsBlock = document.querySelector('.deliver__stores');
   var stations = stationsBlock.querySelectorAll('li');
   var modalApproved = document.querySelector('.modal--approved');
+  var modalApprovedClose = modalApproved.querySelector('.modal__close');
 
   var switchImage = function () {
     stations.forEach(function (item) {
@@ -113,6 +114,25 @@
     }
   };
 
+  var onModalApprovedClose = function () {
+    modalApproved.classList.add('modal--hidden');
+    buyForm.reset();
+  };
+
+  var onLoad = function () {
+    modalApproved.classList.remove('modal--hidden');
+    modalApprovedClose.addEventListener('click', onModalApprovedClose);
+  };
+
+  buyForm.addEventListener('submit', function (evt) {
+    window.backend.sendForm(new FormData(buyForm), onLoad, window.backend.onLoadAndSendDataError);
+    evt.preventDefault();
+  });
+  window.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.utils.ESC && !modalApproved.classList.contains('modal--hidden')) {
+      onModalApprovedClose();
+    }
+  });
   switchImage();
   cardStatus.textContent = 'Не определён';
   buyForm.addEventListener('submit', onFormSubmit);
