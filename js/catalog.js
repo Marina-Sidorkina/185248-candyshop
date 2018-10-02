@@ -1,10 +1,12 @@
 'use strict';
 
 (function () {
+  var CARDS_AMOUNT = 26;
   var catalogCards = document.querySelector('.catalog__cards');
   var catalogLoad = document.querySelector('.catalog__load');
   var cardTemplate = document.querySelector('#card').content.querySelector('article');
   var favoriteGoods = [];
+  var catalogGoodsArray = window.renderGoodsArray(CARDS_AMOUNT);
 
   var ratingClasses = {
     1: '--one',
@@ -25,12 +27,10 @@
     return 'stars__rating' + ratingClasses[obj.rating.value];
   };
 
-  var onCatalogElementBtnClick = function (evt, btn, object) {
-    if (evt.target === btn) {
-      evt.preventDefault();
-      window.order.addGoodToCart(object);
-      window.order.enableFormInputs();
-    }
+  var onCatalogElementBtnClick = function (evt, object) {
+    evt.preventDefault();
+    window.order.addGoodToCart(object);
+    window.order.enableFormInputs();
   };
 
   var renderCatalogDomElements = function (object) {
@@ -38,8 +38,8 @@
     var goodRating = catalogElement.querySelector('.stars__rating');
     var btn = catalogElement.querySelector('.card__btn');
     var btnFavorite = catalogElement.querySelector('.card__btn-favorite');
-    catalogElement.addEventListener('click', function (evt) {
-      onCatalogElementBtnClick(evt, btn, object);
+    btn.addEventListener('click', function (evt) {
+      onCatalogElementBtnClick(evt, object);
     });
     catalogElement.classList.add(getAvailability(object));
     catalogElement.querySelector('.card__title').textContent = object.name;
@@ -72,14 +72,14 @@
 
   var createCatalogElements = function (array) {
     var catalogFragment = document.createDocumentFragment();
-    for (var i = 0; i < array.length; i++) {
-      var element = renderCatalogDomElements(array[i]);
+    array.forEach(function (item) {
+      var element = renderCatalogDomElements(item);
       catalogFragment.appendChild(element);
-    }
+    });
     return catalogFragment;
   };
 
-  catalogCards.appendChild(createCatalogElements(window.mock.catalogGoodsArray));
+  catalogCards.appendChild(createCatalogElements(catalogGoodsArray));
   catalogCards.classList.remove('catalog__cards--load');
   catalogLoad.classList.add('visually-hidden');
 })();

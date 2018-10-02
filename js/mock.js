@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var CATALOG_CARDS_LIST_LENGTH = 26;
-
   var amountParams = {
     MIN: 0,
     MAX: 20
@@ -146,9 +144,5 @@
     return arrayElements;
   };
 
-  var catalogGoodsArray = renderGoodsArray(CATALOG_CARDS_LIST_LENGTH);
-
-  window.mock = {
-    catalogGoodsArray: catalogGoodsArray
-  };
+  window.renderGoodsArray = renderGoodsArray;
 })();

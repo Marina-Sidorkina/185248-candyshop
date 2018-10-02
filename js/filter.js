@@ -3,11 +3,11 @@
 (function () {
   var PRICE_RANGE = 100;
   var priceRangeFilter = document.querySelector('.range__filter');
-  var PRICE_RANGE_FILTER_COORDINATE = priceRangeFilter.getBoundingClientRect();
-  var PRICE_RANGE_START = PRICE_RANGE_FILTER_COORDINATE.x;
-  var PRICE_RANGE_END = PRICE_RANGE_FILTER_COORDINATE.right;
-  var PRICE_RANGE_WIDTH = PRICE_RANGE_FILTER_COORDINATE.width;
-  var PRICE_RANGE_STEP = PRICE_RANGE_WIDTH / PRICE_RANGE;
+  var priceRangeFilterCoordinate = priceRangeFilter.getBoundingClientRect();
+  var PriceRangeStart = priceRangeFilterCoordinate.x;
+  var PriceRangeEnd = priceRangeFilterCoordinate.right;
+  var PriceRangWidth = priceRangeFilterCoordinate.width;
+  var PriceRangeStep = PriceRangWidth / PRICE_RANGE;
   var priceRangeFilterBtnLeft = document.querySelector('.range__btn--left');
   var priceRangeFilterBtnRight = document.querySelector('.range__btn--right');
   var priceRangeMinPinValue = document.querySelector('.range__price--min');
@@ -18,13 +18,13 @@
   var getPriceRangePinCoordinate = function (evtTarget) {
     var pinCoordinate = evtTarget.getBoundingClientRect();
     var pinX = pinCoordinate.x + (pinCoordinate.width / 2);
-    var pinValue = Math.round((pinX - PRICE_RANGE_START) / PRICE_RANGE_STEP);
+    var pinValue = Math.round((pinX - PriceRangeStart) / PriceRangeStep);
     return pinValue;
   };
 
   var fillTheLine = function () {
     fillLine.style.left = priceRangeFilterBtnLeft.offsetLeft + 'px';
-    fillLine.style.right = PRICE_RANGE_FILTER_COORDINATE.width - priceRangeFilterBtnRight.offsetLeft + 'px';
+    fillLine.style.right = PriceRangWidth - priceRangeFilterBtnRight.offsetLeft + 'px';
   };
 
   var onFilterLeftBtnMouseDown = function (evt) {
@@ -32,7 +32,7 @@
     var secondBtnX = priceRangeFilterBtnRight.getBoundingClientRect().x;
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
-      if (moveEvt.clientX >= (PRICE_RANGE_START + priceRangeFilterBtnShift)
+      if (moveEvt.clientX >= (PriceRangeStart + priceRangeFilterBtnShift)
       && moveEvt.clientX < secondBtnX) {
         var shift = startCoord - moveEvt.clientX;
         startCoord = moveEvt.clientX;
@@ -56,7 +56,7 @@
     var secondBtnRight = priceRangeFilterBtnLeft.getBoundingClientRect().right;
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
-      if (moveEvt.clientX <= (PRICE_RANGE_END - priceRangeFilterBtnShift)
+      if (moveEvt.clientX <= (PriceRangeEnd - priceRangeFilterBtnShift)
       && moveEvt.clientX > secondBtnRight) {
         var shift = startCoord - moveEvt.clientX;
         startCoord = moveEvt.clientX;
