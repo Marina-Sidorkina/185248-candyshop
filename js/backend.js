@@ -1,11 +1,18 @@
 'use strict';
 
 (function () {
+  var LOAD_STATUS_OK = 200;
+  var TIMEOUT = 1000;
   var urls = {
-    FORM_URL: 'https://js.dump.academy/candyshop',
-    DATA_URL: 'https://js.dump.academy/candyshop/data'
+    SEND_ADDRESS: 'https://js.dump.academy/candyshop',
+    LOAD_ADDRESS: 'https://js.dump.academy/candyshop/data'
   };
-
+  var loadingErrors = {
+    400: 'Неверный запрос',
+    401: 'Пользователь не авторизован',
+    404: 'Ничего не найдено',
+    DEFAULT: 'Произошла ошибка соединения'
+  };
   var modalError = document.querySelector('.modal--error');
   var modalErrorClose = modalError.querySelector('.modal__close');
   var modalErrorMessage = modalError.querySelector('.modal__message');
@@ -14,21 +21,12 @@
     modalError.classList.add('modal--hidden');
   };
 
-  var onLoadAndSendDataError = function (error) {
-    switch (error) {
-      case 400:
-        error = 'Неверный запрос';
-        break;
-      case 401:
-        error = 'Пользователь не авторизован';
-        break;
-      case 404:
-        error = 'Ничего не найдено';
-        break;
-      default:
-        error = 'Произошла ошибка соединения';
+  var onLoadAndSendError = function (error) {
+    if (error !== 400 || error !== 401 || error !== 404) {
+      error = loadingErrors.DEFAULT;
+    } else {
+      error = loadingErrors[error];
     }
-
     if (error) {
       modalError.classList.remove('modal--hidden');
       modalErrorClose.addEventListener('click', onModalErrorClose);
@@ -36,58 +34,48 @@
     }
   };
 
-  var onLoadAndSendDataTimeout = function (xhr) {
+  var onLoadAndSendTimeout = function (xhr) {
     modalError.classList.remove('modal--hidden');
     modalErrorClose.addEventListener('click', onModalErrorClose);
     modalErrorMessage.textContent = 'Запрос не успел выполниться за ' + xhr.timeout + 'мс';
   };
 
-  var sendForm = function (data, onLoad, onError) {
-    var Xhr = new XMLHttpRequest();
-    Xhr.responseType = 'json';
-    Xhr.addEventListener('load', function () {
-      if (Xhr.status === 200) {
-        onLoad();
-        data = JSON.parse(Xhr.responseText);
+  var createXhr = function (onLoad, onError) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', function () {
+      if (xhr.status === LOAD_STATUS_OK) {
+        onLoad(xhr.response);
       } else {
-        onError(Xhr.status);
+        onError(xhr.status);
       }
     });
-    Xhr.addEventListener('timeout', function () {
-      onLoadAndSendDataTimeout(Xhr);
+    xhr.addEventListener('timeout', function () {
+      onLoadAndSendTimeout(xhr);
     });
-    Xhr.timeout = 1000;
-    Xhr.open('POST', urls.FORM_URL);
-    Xhr.send(data);
+    xhr.timeout = TIMEOUT;
+    return xhr;
   };
 
-  var loadData = function (onLoad, onError) {
-    var Xhr = new XMLHttpRequest();
-    Xhr.responseType = 'json';
-    Xhr.addEventListener('load', function () {
-      if (Xhr.status === 200) {
-        onLoad(Xhr.response);
-      } else {
-        onError(Xhr.status);
-      }
-    });
-    Xhr.addEventListener('timeout', function () {
-      onLoadAndSendDataTimeout(Xhr);
-    });
-    Xhr.timeout = 1000;
-    Xhr.open('GET', urls.DATA_URL);
-    Xhr.send();
+  var send = function (data, onLoad, onError) {
+    var xhr = createXhr(onLoad, onError);
+    xhr.open('POST', urls.SEND_ADDRESS);
+    xhr.send(data);
+  };
+
+  var load = function (onLoad, onError) {
+    var xhr = createXhr(onLoad, onError);
+    xhr.open('GET', urls.LOAD_ADDRESS);
+    xhr.send();
   };
 
   window.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.utils.ESC && !modalError.classList.contains('modal--hidden')) {
-      onModalErrorClose();
-    }
+    window.utils.onEscKeydown(evt, modalError);
   });
 
   window.backend = {
-    sendForm: sendForm,
-    loadData: loadData,
-    onLoadAndSendDataError: onLoadAndSendDataError,
+    send: send,
+    load: load,
+    onError: onLoadAndSendError
   };
 })();

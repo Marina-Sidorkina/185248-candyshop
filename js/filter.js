@@ -25,13 +25,7 @@
   var checkPriceRange = function (item) {
     var min = getPriceRangePinCoordinate(priceRangeFilterBtnLeft);
     var max = getPriceRangePinCoordinate(priceRangeFilterBtnRight);
-    var check = true;
-    if (item.price >= min && item.price <= max) {
-      check = true;
-    } else {
-      check = false;
-    }
-    return check;
+    return (item.price >= min && item.price <= max) ? true : false;
   };
 
   var fillTheLine = function () {

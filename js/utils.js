@@ -23,11 +23,17 @@
       2 : cases[(number % 10 < 5) ? number % 10 : 5]];
   };
 
+  var onEscKeydown = function (evt, modal) {
+    if (evt.keyCode === ESC && !modal.classList.contains('modal--hidden')) {
+      modal.classList.add('modal--hidden');
+    }
+  };
+
   window.utils = {
     getRandomNumber: getRandomNumber,
     getRandomBoolean: getRandomBoolean,
     createTagElement: createTagElement,
     getDeclension: getDeclension,
-    ESC: ESC
+    onEscKeydown: onEscKeydown
   };
 })();

@@ -125,13 +125,11 @@
   };
 
   buyForm.addEventListener('submit', function (evt) {
-    window.backend.sendForm(new FormData(buyForm), onLoad, window.backend.onLoadAndSendDataError);
+    window.backend.send(new FormData(buyForm), onLoad, window.backend.onLoadAndSendDataError);
     evt.preventDefault();
   });
   window.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === window.utils.ESC && !modalApproved.classList.contains('modal--hidden')) {
-      onModalApprovedClose();
-    }
+    window.utils.onEscKeydown(evt, modalApproved);
   });
   switchImage();
   cardStatus.textContent = 'Не определён';

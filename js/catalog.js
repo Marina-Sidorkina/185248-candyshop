@@ -5,8 +5,8 @@
   var catalogLoad = document.querySelector('.catalog__load');
   var cardTemplate = document.querySelector('#card').content.querySelector('article');
   var favoriteGoods = [];
-  var catalog = listFromServer;
   var listFromServer = [];
+  var catalog = listFromServer.slice();
 
   var ratingClasses = {
     1: '--one',
@@ -93,7 +93,7 @@
   };
 
   var onLoad = function (array) {
-    listFromServer = array;
+    listFromServer = array.slice();
     catalog = listFromServer.filter(function (item) {
       return (window.checkPriceRange(item));
     });
@@ -102,7 +102,6 @@
     catalogLoad.classList.add('visually-hidden');
   };
 
-  window.backend.loadData(onLoad, window.backend.onLoadAndSendDataError);
-
+  window.backend.load(onLoad, window.backend.onLoadAndSendDataError);
   window.checkListFromServerPrice = checkListFromServerPrice;
 })();
