@@ -99,6 +99,11 @@
   var onFormSubmit = function () {
     if (buyForm.checkValidity()) {
       modalApproved.classList.remove('modal--hidden');
+      window.addEventListener('keydown', function (evt) {
+        if (window.utils.onEscKeydown(evt.keyCode)) {
+          onModalApprovedClose();
+        }
+      });
     }
   };
 
@@ -127,9 +132,6 @@
   buyForm.addEventListener('submit', function (evt) {
     window.backend.send(new FormData(buyForm), onLoad, window.backend.onLoadAndSendDataError);
     evt.preventDefault();
-  });
-  window.addEventListener('keydown', function (evt) {
-    window.utils.onEscKeydown(evt, modalApproved);
   });
   switchImage();
   cardStatus.textContent = 'Не определён';

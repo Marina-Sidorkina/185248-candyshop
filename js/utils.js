@@ -23,10 +23,8 @@
       2 : cases[(number % 10 < 5) ? number % 10 : 5]];
   };
 
-  var onEscKeydown = function (evt, modal) {
-    if (evt.keyCode === ESC && !modal.classList.contains('modal--hidden')) {
-      modal.classList.add('modal--hidden');
-    }
+  var onEscKeydown = function (keyCode) {
+    return (keyCode === ESC);
   };
 
   window.utils = {

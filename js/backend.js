@@ -21,23 +21,34 @@
     modalError.classList.add('modal--hidden');
   };
 
-  var onLoadAndSendError = function (error) {
-    if (error !== 400 || error !== 401 || error !== 404) {
-      error = loadingErrors.DEFAULT;
-    } else {
-      error = loadingErrors[error];
-    }
-    if (error) {
-      modalError.classList.remove('modal--hidden');
-      modalErrorClose.addEventListener('click', onModalErrorClose);
-      modalErrorMessage.textContent = error;
+  var onWindowEscKeydown = function (evt) {
+    if (window.utils.onEscKeydown(evt.keyCode)) {
+      onModalErrorClose();
     }
   };
 
-  var onLoadAndSendTimeout = function (xhr) {
+  var onLoadAndSendError = function (error) {
+    error = (loadingErrors[error] || loadingErrors.DEFAULT);
+    if (error) {
+      modalError.classList.remove('modal--hidden');
+      modalErrorClose.addEventListener('click', onModalErrorClose);
+      window.addEventListener('keydown', function (evt) {
+        window.utils.onEscKeydown(evt, modalError);
+      });
+      modalErrorMessage.textContent = error;
+      window.addEventListener('keydown', function (evt) {
+        onWindowEscKeydown(evt);
+      });
+    }
+  };
+
+  var onLoadAndSendTimeout = function (timeout) {
     modalError.classList.remove('modal--hidden');
     modalErrorClose.addEventListener('click', onModalErrorClose);
-    modalErrorMessage.textContent = 'Запрос не успел выполниться за ' + xhr.timeout + 'мс';
+    modalErrorMessage.textContent = 'Запрос не успел выполниться за ' + timeout + 'мс';
+    window.addEventListener('keydown', function (evt) {
+      onWindowEscKeydown(evt);
+    });
   };
 
   var createXhr = function (onLoad, onError) {
@@ -50,10 +61,10 @@
         onError(xhr.status);
       }
     });
-    xhr.addEventListener('timeout', function () {
-      onLoadAndSendTimeout(xhr);
-    });
     xhr.timeout = TIMEOUT;
+    xhr.addEventListener('timeout', function () {
+      onLoadAndSendTimeout(xhr.timeout);
+    });
     return xhr;
   };
 
@@ -68,10 +79,6 @@
     xhr.open('GET', urls.LOAD_ADDRESS);
     xhr.send();
   };
-
-  window.addEventListener('keydown', function (evt) {
-    window.utils.onEscKeydown(evt, modalError);
-  });
 
   window.backend = {
     send: send,
