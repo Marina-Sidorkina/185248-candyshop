@@ -22,6 +22,12 @@
     return pinValue;
   };
 
+  var checkPriceRange = function (item) {
+    var min = getPriceRangePinCoordinate(priceRangeFilterBtnLeft);
+    var max = getPriceRangePinCoordinate(priceRangeFilterBtnRight);
+    return (item.price >= min && item.price <= max);
+  };
+
   var fillTheLine = function () {
     fillLine.style.left = priceRangeFilterBtnLeft.offsetLeft + 'px';
     fillLine.style.right = PriceRangWidth - priceRangeFilterBtnRight.offsetLeft + 'px';
@@ -44,6 +50,7 @@
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       priceRangeMinPinValue.textContent = getPriceRangePinCoordinate(evt.target);
+      window.checkListFromServerPrice();
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
@@ -68,6 +75,7 @@
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       priceRangeMaxPinValue.textContent = getPriceRangePinCoordinate(evt.target);
+      window.checkListFromServerPrice();
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
@@ -79,4 +87,6 @@
   priceRangeMaxPinValue.textContent = getPriceRangePinCoordinate(priceRangeFilterBtnRight);
   priceRangeFilterBtnLeft.addEventListener('mousedown', onFilterLeftBtnMouseDown);
   priceRangeFilterBtnRight.addEventListener('mousedown', onFilterRightBtnMouseDown);
+
+  window.checkPriceRange = checkPriceRange;
 })();

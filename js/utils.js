@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var ESC = 27;
   var getRandomNumber = function (min, max) {
     return Math.floor(Math.random() * (max - min) + min);
   };
@@ -22,10 +23,15 @@
       2 : cases[(number % 10 < 5) ? number % 10 : 5]];
   };
 
+  var onEscKeydown = function (keyCode) {
+    return (keyCode === ESC);
+  };
+
   window.utils = {
     getRandomNumber: getRandomNumber,
     getRandomBoolean: getRandomBoolean,
     createTagElement: createTagElement,
-    getDeclension: getDeclension
+    getDeclension: getDeclension,
+    onEscKeydown: onEscKeydown
   };
 })();

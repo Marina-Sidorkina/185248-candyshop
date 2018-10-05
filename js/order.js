@@ -51,7 +51,7 @@
       onIncreaseBtnClick(object, orderElement);
     });
     orderElement.querySelector('.card-order__title').textContent = object.name;
-    orderElement.querySelector('.card-order__img').src = object.picture;
+    orderElement.querySelector('.card-order__img').src = 'img/cards/' + object.picture;
     orderElement.querySelector('.card-order__img').alt = object.name;
     orderElement.querySelector('.card-order__count').value = object.orderAmount;
     var amount = orderElement.querySelector('.card-order__count').value;
