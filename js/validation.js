@@ -42,7 +42,7 @@
         }
       }
     }
-    return sum % 10 === 0 ? true : false;
+    return (sum % 10 === 0);
   };
 
   var onCardNumberInputInvalid = function (evt) {

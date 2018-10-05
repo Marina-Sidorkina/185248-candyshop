@@ -85,9 +85,7 @@
   };
 
   var checkListFromServerPrice = function () {
-    var array = listFromServer.filter(function (item) {
-      return (window.checkPriceRange(item));
-    });
+    var array = listFromServer.filter(window.checkPriceRange);
     catalog = array;
     replaceCardsInCatalog(array);
   };

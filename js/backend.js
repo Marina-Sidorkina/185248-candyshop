@@ -36,9 +36,7 @@
         window.utils.onEscKeydown(evt, modalError);
       });
       modalErrorMessage.textContent = error;
-      window.addEventListener('keydown', function (evt) {
-        onWindowEscKeydown(evt);
-      });
+      window.addEventListener('keydown', onWindowEscKeydown);
     }
   };
 
@@ -46,9 +44,7 @@
     modalError.classList.remove('modal--hidden');
     modalErrorClose.addEventListener('click', onModalErrorClose);
     modalErrorMessage.textContent = 'Запрос не успел выполниться за ' + timeout + 'мс';
-    window.addEventListener('keydown', function (evt) {
-      onWindowEscKeydown(evt);
-    });
+    window.addEventListener('keydown', onWindowEscKeydown);
   };
 
   var createXhr = function (onLoad, onError) {
