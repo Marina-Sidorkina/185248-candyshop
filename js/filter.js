@@ -57,14 +57,14 @@
           fillTheLine();
         }
       };
-      var onMouseUp = function (upEvt) {
+      var onMouseUp = window.debounce(function (upEvt) {
         upEvt.preventDefault();
         priceRangeMinPinValue.textContent = getPriceRangePinCoordinate(evt.target);
         window.catalog.checkListFromServerPrice();
-        window.catalog.filterGoods();
+        window.catalog.onGoodsFiltersChange();
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
-      };
+      });
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
     }
@@ -85,14 +85,14 @@
           fillTheLine();
         }
       };
-      var onMouseUp = function (upEvt) {
+      var onMouseUp = window.debounce(function (upEvt) {
         upEvt.preventDefault();
         priceRangeMaxPinValue.textContent = getPriceRangePinCoordinate(evt.target);
         window.catalog.checkListFromServerPrice();
-        window.catalog.filterGoods();
+        window.catalog.onGoodsFiltersChange();
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
-      };
+      });
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
     }

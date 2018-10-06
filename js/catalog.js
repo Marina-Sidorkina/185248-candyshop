@@ -192,7 +192,7 @@
     return catalog;
   };
 
-  var filterGoods = function () {
+  var onGoodsFiltersChange = window.debounce(function () {
     var array;
     checkListFromServerPrice();
     sortGoods();
@@ -204,9 +204,9 @@
     } else {
       replaceCardsInCatalog(array);
     }
-  };
+  });
 
-  var onFilterInStockAndFavoriteChange = function (filterChanged, filterToBlock, array) {
+  var onFilterInStockAndFavoriteChange = window.debounce(function (filterChanged, filterToBlock, array) {
     if (filterChanged.checked) {
       window.filter.resetPriceRangeFilterBtnsValues();
       strongFilters.forEach(function (item) {
@@ -224,13 +224,12 @@
         item.disabled = false;
       });
       checkListFromServerPrice();
-      filterGoods();
+      onGoodsFiltersChange();
       replaceCardsInCatalog(catalog);
     }
-  };
+  });
 
-  var onShowAllGoodsClick = function (evt) {
-    evt.preventDefault();
+  var onShowAllGoodsClick = window.debounce(function () {
     var array;
     allFilters.forEach(function (item) {
       item.checked = false;
@@ -241,34 +240,33 @@
       return b.rating.number - a.rating.number;
     });
     replaceCardsInCatalog(array);
-  };
+  });
 
   var getGoodsAmountByType = function (index, kind) {
-    var amount;
-    amount = listFromServer.filter(function (item) {
+    var amount = listFromServer.filter(function (item) {
       return item.kind === kind;
     });
     filteredGoodsCount[index].textContent = '(' + amount.length + ')';
-    return amount;
+  };
+
+  var getGoodsAmountByContent = function (index, content) {
+    var amount = listFromServer.filter(function (item) {
+      return (!item.nutritionFacts[content]);
+    });
+    filteredGoodsCount[index].textContent = '(' + amount.length + ')';
   };
 
   var getGoodsAmountByFilters = function () {
+    var amount;
     GOODS_TYPES.forEach(function (type, index) {
       getGoodsAmountByType(index, type);
     });
-    var amount;
-    amount = listFromServer.filter(function (item) {
-      return (!item.nutritionFacts.sugar);
-    });
-    filteredGoodsCount[5].textContent = '(' + amount.length + ')';
+    getGoodsAmountByContent(5, 'sugar');
+    getGoodsAmountByContent(7, 'gluten');
     amount = listFromServer.filter(function (item) {
       return (item.nutritionFacts.vegetarian);
     });
     filteredGoodsCount[6].textContent = '(' + amount.length + ')';
-    amount = listFromServer.filter(function (item) {
-      return (!item.nutritionFacts.gluten);
-    });
-    filteredGoodsCount[7].textContent = '(' + amount.length + ')';
     filteredGoodsCount[8].textContent = '(' + favoriteGoods.length + ')';
     amount = listFromServer.filter(function (item) {
       return (item.amount > 0);
@@ -283,7 +281,7 @@
     catalog = listFromServer.filter(function (item) {
       return (window.filter.checkPriceRange(item));
     });
-    filterGoods();
+    onGoodsFiltersChange();
     getGoodsAmountByFilters();
     catalogCards.appendChild(createCatalogElements(catalog));
     catalogCards.classList.remove('catalog__cards--load');
@@ -291,29 +289,27 @@
   };
 
   window.backend.load(onLoad, window.backend.onLoadAndSendDataError);
-  filterFavorite.addEventListener('change', function () {
+  filterFavorite.addEventListener('change', window.debounce(function () {
     onFilterInStockAndFavoriteChange(filterFavorite, filterInStock, favoriteGoods);
-  });
-  filterInStock.addEventListener('change', function () {
+  }));
+  filterInStock.addEventListener('change', window.debounce(function () {
     var list = checkInStock();
     var array = list.filter(function (item) {
       return (!window.order.checkGoodInOrderAmount(item));
     });
     onFilterInStockAndFavoriteChange(filterInStock, filterFavorite, array);
-  });
+  }));
   strongFilters.forEach(function (item) {
-    item.addEventListener('change', function () {
-      filterGoods();
-    });
+    item.addEventListener('change', onGoodsFiltersChange);
   });
-  showAllGoods.addEventListener('click', function (evt) {
+  showAllGoods.addEventListener('click', window.debounce(function (evt) {
+    evt.preventDefault();
     onShowAllGoodsClick(evt);
-  });
+  }));
 
   window.catalog = {
-    createCatalogElements: createCatalogElements,
     checkListFromServerPrice: checkListFromServerPrice,
-    filterGoods: filterGoods,
+    onGoodsFiltersChange: onGoodsFiltersChange,
     checkFilterFavoriteAndInStockstate: checkFilterFavoriteAndInStockstate
   };
 })();
