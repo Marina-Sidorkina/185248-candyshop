@@ -302,10 +302,10 @@
   strongFilters.forEach(function (item) {
     item.addEventListener('change', onGoodsFiltersChange);
   });
-  showAllGoods.addEventListener('click', window.debounce(function (evt) {
+  showAllGoods.addEventListener('click', function (evt) {
     evt.preventDefault();
     onShowAllGoodsClick(evt);
-  }));
+  });
 
   window.catalog = {
     checkListFromServerPrice: checkListFromServerPrice,
