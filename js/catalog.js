@@ -10,7 +10,6 @@
   var filterFavorite = document.querySelector('#filter-favorite');
   var filterInStock = document.querySelector('#filter-availability');
   var sortingForm = document.querySelector('.sorting-form');
-
   var ratingClasses = {
     1: '--one',
     2: '--two',

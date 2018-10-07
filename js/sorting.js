@@ -21,14 +21,28 @@
       return b.rating.value - a.rating.value;
     }
   };
+  var filterByContentVariants = {
+    0: function (item) {
+      return (!item.nutritionFacts.sugar);
+    },
+    1: function (item) {
+      return (item.nutritionFacts.vegetarian);
+    },
+    2: function (item) {
+      return (!item.nutritionFacts.gluten);
+    }
+  };
   var typeFilters = document.querySelectorAll('.input-btn__input--type');
   var contentFilters = document.querySelectorAll('.input-btn__input--content');
   var sortingFilters = document.querySelectorAll('.input-btn__input--sorting');
   var filtersBlock = document.querySelector('.catalog__sidebar');
   var allFilters = filtersBlock.querySelectorAll('.input-btn__input');
   var filtersNoResult = document.querySelector('#empty-filters').content.querySelector('div');
-  var filteredGoodsCount = document.querySelectorAll('.input-btn__item-count');
+  var filteredByTypeGoodsCount = document.querySelectorAll('.input-btn__item-count--type');
+  var filteredByContentGoodsCount = document.querySelectorAll('.input-btn__item-count--content');
   var priceRangeCount = document.querySelector('.range__count');
+  var goodsFavoriteCount = document.querySelector('.input-btn__item-count--favorite');
+  var goodsInStockCount = document.querySelector('.input-btn__item-count--instock');
   var catalogCards = document.querySelector('.catalog__cards');
   var strongFilters = document.querySelectorAll('.input-btn__input--strong');
 
@@ -94,13 +108,13 @@
     return catalog;
   };
 
-  var onFilterInStockAndFavoriteCancel = function () {
+  var onFilterInStockAndFavoriteCancel = window.debounce(function () {
     strongFilters.forEach(function (item) {
       item.disabled = false;
     });
     window.catalog.checkListFromServerPrice();
     window.catalog.onSortingFiltersCancel();
-  };
+  });
 
   var onFilterInStockAndFavoriteChange = window.debounce(function (filterChanged, filterToBlock, array) {
     if (filterChanged.checked) {
@@ -143,34 +157,38 @@
     var amount = listFromServer.filter(function (item) {
       return item.kind === kind;
     });
-    filteredGoodsCount[index].textContent = '(' + amount.length + ')';
+    filteredByTypeGoodsCount[index].textContent = '(' + amount.length + ')';
   };
 
-  var getGoodsAmountByContent = function (index, content, listFromServer) {
-    var amount = listFromServer.filter(function (item) {
-      return (!item.nutritionFacts[content]);
+  var getGoodsAmountByContent = function (listFromServer) {
+    filteredByContentGoodsCount.forEach(function (filter, index) {
+      var amount = listFromServer.filter(function (item) {
+        return filterByContentVariants[index](item);
+      });
+      filteredByContentGoodsCount[index].textContent = '(' + amount.length + ')';
     });
-    filteredGoodsCount[index].textContent = '(' + amount.length + ')';
+  };
+
+  var getGoodsInStockAmount = function (listFromServer) {
+    var amount = listFromServer.filter(function (item) {
+      return (item.amount > 0);
+    });
+    goodsInStockCount.textContent = '(' + amount.length + ')';
+  };
+
+  var getGoodsByPriceAmount = function (listFromServer) {
+    var amount = listFromServer.filter(window.filter.checkPriceRange);
+    priceRangeCount.textContent = '(' + amount.length + ')';
   };
 
   var getGoodsAmountByFilters = function (listFromServer, favoriteGoodsList) {
-    var amount;
     GOODS_TYPES.forEach(function (type, index) {
       getGoodsAmountByType(index, type, listFromServer);
     });
-    getGoodsAmountByContent(5, 'sugar', listFromServer);
-    getGoodsAmountByContent(7, 'gluten', listFromServer);
-    amount = listFromServer.filter(function (item) {
-      return (item.nutritionFacts.vegetarian);
-    });
-    filteredGoodsCount[6].textContent = '(' + amount.length + ')';
-    filteredGoodsCount[8].textContent = '(' + favoriteGoodsList.length + ')';
-    amount = listFromServer.filter(function (item) {
-      return (item.amount > 0);
-    });
-    filteredGoodsCount[9].textContent = '(' + amount.length + ')';
-    amount = listFromServer.filter(window.filter.checkPriceRange);
-    priceRangeCount.textContent = '(' + amount.length + ')';
+    getGoodsAmountByContent(listFromServer);
+    goodsFavoriteCount.textContent = '(' + favoriteGoodsList.length + ')';
+    getGoodsInStockAmount(listFromServer);
+    getGoodsByPriceAmount(listFromServer);
   };
 
   window.sorting = {
