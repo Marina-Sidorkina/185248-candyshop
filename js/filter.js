@@ -61,7 +61,7 @@
         upEvt.preventDefault();
         priceRangeMinPinValue.textContent = getPriceRangePinCoordinate(evt.target);
         window.catalog.checkListFromServerPrice();
-        window.catalog.onGoodsFiltersChange();
+        window.catalog.onPriceChangeFilterGoods();
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
       });
@@ -88,8 +88,7 @@
       var onMouseUp = window.debounce(function (upEvt) {
         upEvt.preventDefault();
         priceRangeMaxPinValue.textContent = getPriceRangePinCoordinate(evt.target);
-        window.catalog.checkListFromServerPrice();
-        window.catalog.onGoodsFiltersChange();
+        window.catalog.onPriceChangeFilterGoods();
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
       });
