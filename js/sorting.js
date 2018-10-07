@@ -7,23 +7,23 @@
     'Мармелад',
     'Зефир'
   ];
-  var typeFilters = [
-    document.querySelector('#filter-icecream'),
-    document.querySelector('#filter-soda'),
-    document.querySelector('#filter-gum'),
-    document.querySelector('#filter-marmalade'), document.querySelector('#filter-marshmallows')
-  ];
-  var contentFilters = [
-    document.querySelector('#filter-sugar-free'),
-    document.querySelector('#filter-vegetarian'),
-    document.querySelector('#filter-gluten-free')
-  ];
-  var sortingFilters = [
-    document.querySelector('#filter-popular'),
-    document.querySelector('#filter-rating'),
-    document.querySelector('#filter-expensive'),
-    document.querySelector('#filter-cheep')
-  ];
+  var sortingVariants = {
+    0: function (a, b) {
+      return b.rating.number - a.rating.number;
+    },
+    1: function (a, b) {
+      return b.price - a.price;
+    },
+    2: function (a, b) {
+      return a.price - b.price;
+    },
+    3: function (a, b) {
+      return b.rating.value - a.rating.value;
+    }
+  };
+  var typeFilters = document.querySelectorAll('.input-btn__input--type');
+  var contentFilters = document.querySelectorAll('.input-btn__input--content');
+  var sortingFilters = document.querySelectorAll('.input-btn__input--sorting');
   var filtersBlock = document.querySelector('.catalog__sidebar');
   var allFilters = filtersBlock.querySelectorAll('.input-btn__input');
   var filtersNoResult = document.querySelector('#empty-filters').content.querySelector('div');
@@ -31,7 +31,6 @@
   var priceRangeCount = document.querySelector('.range__count');
   var catalogCards = document.querySelector('.catalog__cards');
   var strongFilters = document.querySelectorAll('.input-btn__input--strong');
-
 
   var createCatalogElements = function (array) {
     var catalogFragment = document.createDocumentFragment();
@@ -85,29 +84,22 @@
   };
 
   var sortGoods = function (catalog) {
-    var array;
-    if (sortingFilters[0].checked) {
-      array = catalog.sort(function (a, b) {
-        return b.rating.number - a.rating.number;
-      });
-      catalog = array.slice();
-    } else if (sortingFilters[1].checked) {
-      array = catalog.sort(function (a, b) {
-        return b.rating.value - a.rating.value;
-      });
-      catalog = array.slice();
-    } else if (sortingFilters[2].checked) {
-      array = catalog.sort(function (a, b) {
-        return b.price - a.price;
-      });
-      catalog = array.slice();
-    } else if (sortingFilters[3].checked) {
-      array = catalog.sort(function (a, b) {
-        return a.price - b.price;
-      });
-      catalog = array.slice();
-    }
+    sortingFilters.forEach(function (item, index) {
+      if (item.checked) {
+        catalog.sort(function (a, b) {
+          return sortingVariants[index](a, b);
+        });
+      }
+    });
     return catalog;
+  };
+
+  var onFilterInStockAndFavoriteCancel = function () {
+    strongFilters.forEach(function (item) {
+      item.disabled = false;
+    });
+    window.catalog.checkListFromServerPrice();
+    window.catalog.onSortingFiltersCancel();
   };
 
   var onFilterInStockAndFavoriteChange = window.debounce(function (filterChanged, filterToBlock, array) {
@@ -118,17 +110,9 @@
         item.disabled = true;
       });
       filterToBlock.checked = false;
-      if (!array.length) {
-        window.sorting.showNoResultBlock();
-      } else {
-        window.sorting.replaceCardsInCatalog(array);
-      }
+      return (!array.length) ? showNoResultBlock() : replaceCardsInCatalog(array);
     } else {
-      strongFilters.forEach(function (item) {
-        item.disabled = false;
-      });
-      window.catalog.checkListFromServerPrice();
-      window.catalog.onSortingFiltersCancel();
+      return onFilterInStockAndFavoriteCancel();
     }
   });
 
@@ -139,11 +123,7 @@
     array = catalog.filter(function (item) {
       return (checkSugar(item) && checkVegetarian(item) && checkGluten(item) && checkType(item));
     });
-    if (!array.length) {
-      showNoResultBlock();
-    } else {
-      replaceCardsInCatalog(array);
-    }
+    return (!array.length) ? showNoResultBlock() : replaceCardsInCatalog(array);
   });
 
   var onShowAllGoodsClick = window.debounce(function (catalog) {

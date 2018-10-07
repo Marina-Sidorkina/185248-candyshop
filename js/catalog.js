@@ -78,8 +78,11 @@
   };
 
   var checkInStock = function () {
-    var array = listFromServer.filter(function (item) {
+    var list = listFromServer.filter(function (item) {
       return (item.amount > 0);
+    });
+    var array = list.filter(function (item) {
+      return (!window.order.checkGoodInOrderAmount(item));
     });
     return array;
   };
@@ -116,11 +119,7 @@
     if (evt.target === filterFavorite) {
       window.sorting.onFilterInStockAndFavoriteChange(filterFavorite, filterInStock, favoriteGoods);
     } else if (evt.target === filterInStock) {
-      var list = checkInStock();
-      var array = list.filter(function (item) {
-        return (!window.order.checkGoodInOrderAmount(item));
-      });
-      window.sorting.onFilterInStockAndFavoriteChange(filterInStock, filterFavorite, array);
+      window.sorting.onFilterInStockAndFavoriteChange(filterInStock, filterFavorite, checkInStock());
     } else {
       window.sorting.onGoodsFiltersChange(catalog, listFromServer);
     }
