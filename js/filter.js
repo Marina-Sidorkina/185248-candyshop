@@ -43,7 +43,7 @@
   };
 
   var onFilterLeftBtnMouseDown = function (evt) {
-    if (!window.catalog.checkFilterFavoriteAndInStockstate()) {
+    if (!window.catalog.checkSpecialFilters()) {
       var startCoord = evt.clientX;
       var secondBtnX = priceRangeFilterBtnRight.getBoundingClientRect().x;
       var onMouseMove = function (moveEvt) {
@@ -60,7 +60,6 @@
       var onMouseUp = window.debounce(function (upEvt) {
         upEvt.preventDefault();
         priceRangeMinPinValue.textContent = getPriceRangePinCoordinate(evt.target);
-        window.catalog.checkListFromServerPrice();
         window.catalog.onPriceChangeFilterGoods();
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
@@ -71,7 +70,7 @@
   };
 
   var onFilterRightBtnMouseDown = function (evt) {
-    if (!window.catalog.checkFilterFavoriteAndInStockstate()) {
+    if (!window.catalog.checkSpecialFilters()) {
       var startCoord = evt.clientX;
       var secondBtnRight = priceRangeFilterBtnLeft.getBoundingClientRect().right;
       var onMouseMove = function (moveEvt) {

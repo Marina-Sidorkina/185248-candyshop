@@ -22,29 +22,28 @@
     }
   };
   var filterByContentVariants = {
-    0: function (item) {
+    sugar: function (item) {
       return (!item.nutritionFacts.sugar);
     },
-    1: function (item) {
+    vegetarian: function (item) {
       return (item.nutritionFacts.vegetarian);
     },
-    2: function (item) {
+    gluten: function (item) {
       return (!item.nutritionFacts.gluten);
     }
   };
+  var catalogCards = document.querySelector('.catalog__cards');
   var typeFilters = document.querySelectorAll('.input-btn__input--type');
-  var contentFilters = document.querySelectorAll('.input-btn__input--content');
   var sortingFilters = document.querySelectorAll('.input-btn__input--sorting');
+  var strongFilters = document.querySelectorAll('.input-btn__input--strong');
   var filtersBlock = document.querySelector('.catalog__sidebar');
   var allFilters = filtersBlock.querySelectorAll('.input-btn__input');
-  var filtersNoResult = document.querySelector('#empty-filters').content.querySelector('div');
-  var filteredByTypeGoodsCount = document.querySelectorAll('.input-btn__item-count--type');
-  var filteredByContentGoodsCount = document.querySelectorAll('.input-btn__item-count--content');
   var priceRangeCount = document.querySelector('.range__count');
   var goodsFavoriteCount = document.querySelector('.input-btn__item-count--favorite');
   var goodsInStockCount = document.querySelector('.input-btn__item-count--instock');
-  var catalogCards = document.querySelector('.catalog__cards');
-  var strongFilters = document.querySelectorAll('.input-btn__input--strong');
+  var goodsByTypeCount = document.querySelectorAll('.input-btn__item-count--type');
+  var goodsByContentCount = document.querySelectorAll('.input-btn__item-count--content');
+  var noResultBlock = document.querySelector('#empty-filters').content.querySelector('div');
 
   var createCatalogElements = function (array) {
     var catalogFragment = document.createDocumentFragment();
@@ -66,29 +65,29 @@
 
   var showNoResultBlock = function () {
     catalogCards.innerHTML = '';
-    catalogCards.appendChild(filtersNoResult);
+    catalogCards.appendChild(noResultBlock);
   };
 
-  var checkSugar = function (item) {
-    return (contentFilters[0].checked) ? (!item.nutritionFacts.sugar) : true;
-  };
-
-  var checkVegetarian = function (item) {
-    return (contentFilters[1].checked) ? (item.nutritionFacts.vegetarian) : true;
-  };
-
-  var checkGluten = function (item) {
-    return (contentFilters[2].checked) ? (!item.nutritionFacts.gluten) : true;
+  var checkContent = function (item) {
+    var check = true;
+    var contentFiltersChecked = document.querySelectorAll('.input-btn__input--content:checked');
+    if (contentFiltersChecked.length) {
+      var array = Array.from(contentFiltersChecked);
+      check = array.every(function (input) {
+        return filterByContentVariants[input.value](item);
+      });
+    }
+    return check;
   };
 
   var checkType = function (item) {
     var condition = [];
     var check = true;
-    for (var i = 0; i < typeFilters.length; i++) {
-      if (typeFilters[i].checked) {
-        condition[condition.length] = GOODS_TYPES[i];
+    typeFilters.forEach(function (filter, index) {
+      if (filter.checked) {
+        condition[condition.length] = GOODS_TYPES[index];
       }
-    }
+    });
     if (condition.length) {
       check = condition.some(function (kind) {
         return kind === item.kind;
@@ -108,15 +107,15 @@
     return catalog;
   };
 
-  var onFilterInStockAndFavoriteCancel = window.debounce(function () {
+  var onSpecialFiltersCancel = window.debounce(function () {
     strongFilters.forEach(function (item) {
       item.disabled = false;
     });
     window.catalog.checkListFromServerPrice();
-    window.catalog.onSortingFiltersCancel();
+    window.catalog.getInitialCalalog();
   });
 
-  var onFilterInStockAndFavoriteChange = window.debounce(function (filterChanged, filterToBlock, array) {
+  var onSpecialFiltersChange = window.debounce(function (filterChanged, filterToBlock, array) {
     if (filterChanged.checked) {
       window.filter.resetPriceRangeFilterBtnsValues();
       strongFilters.forEach(function (item) {
@@ -126,24 +125,27 @@
       filterToBlock.checked = false;
       return (!array.length) ? showNoResultBlock() : replaceCardsInCatalog(array);
     } else {
-      return onFilterInStockAndFavoriteCancel();
+      return onSpecialFiltersCancel();
     }
   });
 
-  var onGoodsFiltersChange = window.debounce(function (catalog, listFromServer) {
+  var onFiltersChange = window.debounce(function (catalog, listFromServer) {
     var array;
     window.catalog.checkListFromServerPrice();
     sortGoods(catalog, listFromServer);
     array = catalog.filter(function (item) {
-      return (checkSugar(item) && checkVegetarian(item) && checkGluten(item) && checkType(item));
+      return (checkContent(item) && checkType(item));
     });
     return (!array.length) ? showNoResultBlock() : replaceCardsInCatalog(array);
   });
 
-  var onShowAllGoodsClick = window.debounce(function (catalog) {
+  var onShowAllClick = window.debounce(function (catalog) {
     var array;
     allFilters.forEach(function (item) {
       item.checked = false;
+    });
+    strongFilters.forEach(function (item) {
+      item.disabled = false;
     });
     sortingFilters[0].checked = true;
     window.catalog.checkListFromServerPrice();
@@ -153,51 +155,51 @@
     replaceCardsInCatalog(array);
   });
 
-  var getGoodsAmountByType = function (index, kind, listFromServer) {
+  var getAmountByType = function (index, kind, listFromServer) {
     var amount = listFromServer.filter(function (item) {
       return item.kind === kind;
     });
-    filteredByTypeGoodsCount[index].textContent = '(' + amount.length + ')';
+    goodsByTypeCount[index].textContent = '(' + amount.length + ')';
   };
 
-  var getGoodsAmountByContent = function (listFromServer) {
-    filteredByContentGoodsCount.forEach(function (filter, index) {
+  var getAmountByContent = function (listFromServer) {
+    goodsByContentCount.forEach(function (span, index) {
       var amount = listFromServer.filter(function (item) {
-        return filterByContentVariants[index](item);
+        return filterByContentVariants[span.id](item);
       });
-      filteredByContentGoodsCount[index].textContent = '(' + amount.length + ')';
+      goodsByContentCount[index].textContent = '(' + amount.length + ')';
     });
   };
 
-  var getGoodsInStockAmount = function (listFromServer) {
+  var getInStockAmount = function (listFromServer) {
     var amount = listFromServer.filter(function (item) {
       return (item.amount > 0);
     });
     goodsInStockCount.textContent = '(' + amount.length + ')';
   };
 
-  var getGoodsByPriceAmount = function (listFromServer) {
+  var getAmountByPrice = function (listFromServer) {
     var amount = listFromServer.filter(window.filter.checkPriceRange);
     priceRangeCount.textContent = '(' + amount.length + ')';
   };
 
-  var getGoodsAmountByFilters = function (listFromServer, favoriteGoodsList) {
+  var getGoodsAmount = function (listFromServer, favoriteGoodsList) {
     GOODS_TYPES.forEach(function (type, index) {
-      getGoodsAmountByType(index, type, listFromServer);
+      getAmountByType(index, type, listFromServer);
     });
-    getGoodsAmountByContent(listFromServer);
+    getAmountByContent(listFromServer);
     goodsFavoriteCount.textContent = '(' + favoriteGoodsList.length + ')';
-    getGoodsInStockAmount(listFromServer);
-    getGoodsByPriceAmount(listFromServer);
+    getInStockAmount(listFromServer);
+    getAmountByPrice(listFromServer);
   };
 
   window.sorting = {
     replaceCardsInCatalog: replaceCardsInCatalog,
     showNoResultBlock: showNoResultBlock,
-    onGoodsFiltersChange: onGoodsFiltersChange,
-    onShowAllGoodsClick: onShowAllGoodsClick,
-    getGoodsAmountByFilters: getGoodsAmountByFilters,
+    onFiltersChange: onFiltersChange,
+    onShowAllClick: onShowAllClick,
+    getGoodsAmount: getGoodsAmount,
     onCatalogCardsLoading: onCatalogCardsLoading,
-    onFilterInStockAndFavoriteChange: onFilterInStockAndFavoriteChange
+    onSpecialFiltersChange: onSpecialFiltersChange
   };
 })();
