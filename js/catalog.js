@@ -1,13 +1,15 @@
 'use strict';
 
 (function () {
-  var catalogCards = document.querySelector('.catalog__cards');
-  var catalogLoad = document.querySelector('.catalog__load');
-  var cardTemplate = document.querySelector('#card').content.querySelector('article');
   var favoriteGoods = [];
   var listFromServer = [];
   var catalog = listFromServer.slice();
-
+  var catalogLoad = document.querySelector('.catalog__load');
+  var cardTemplate = document.querySelector('#card').content.querySelector('article');
+  var showAllGoods = document.querySelector('.catalog__submit');
+  var filterFavorite = document.querySelector('#filter-favorite');
+  var filterInStock = document.querySelector('#filter-availability');
+  var sortingForm = document.querySelector('.sorting-form');
   var ratingClasses = {
     1: '--one',
     2: '--two',
@@ -70,36 +72,67 @@
     return catalogElement;
   };
 
-  var createCatalogElements = function (array) {
-    var catalogFragment = document.createDocumentFragment();
-    array.forEach(function (item) {
-      var element = renderCatalogDomElements(item);
-      catalogFragment.appendChild(element);
-    });
-    return catalogFragment;
+  var checkSpecialFilters = function () {
+    return (filterFavorite.checked || filterInStock.checked);
   };
 
-  var replaceCardsInCatalog = function (array) {
-    catalogCards.innerHTML = '';
-    catalogCards.appendChild(createCatalogElements(array));
+  var checkInStock = function () {
+    var list = listFromServer.filter(function (item) {
+      return (item.amount > 0);
+    });
+    var array = list.filter(function (item) {
+      return (!window.order.checkGoodInOrderAmount(item));
+    });
+    return array;
+  };
+
+  var onPriceChangeFilterGoods = function () {
+    checkListFromServerPrice();
+    window.sorting.onFiltersChange(catalog, listFromServer);
+  };
+
+  var getInitialCalalog = function () {
+    window.sorting.onFiltersChange(catalog, listFromServer);
+    window.sorting.replaceCardsInCatalog(catalog);
   };
 
   var checkListFromServerPrice = function () {
-    var array = listFromServer.filter(window.checkPriceRange);
-    catalog = array;
-    replaceCardsInCatalog(array);
+    var array = listFromServer.filter(window.filter.checkPriceRange);
+    catalog = array.slice();
   };
 
   var onLoad = function (array) {
     listFromServer = array.slice();
     catalog = listFromServer.filter(function (item) {
-      return (window.checkPriceRange(item));
+      return (window.filter.checkPriceRange(item));
     });
-    catalogCards.appendChild(createCatalogElements(catalog));
-    catalogCards.classList.remove('catalog__cards--load');
+    window.sorting.onFiltersChange(catalog, listFromServer);
+    window.sorting.getGoodsAmount(listFromServer, favoriteGoods);
+    window.sorting.replaceCardsInCatalog(catalog);
+    window.sorting.onCatalogCardsLoading();
     catalogLoad.classList.add('visually-hidden');
   };
 
   window.backend.load(onLoad, window.backend.onLoadAndSendDataError);
-  window.checkListFromServerPrice = checkListFromServerPrice;
+  sortingForm.addEventListener('change', window.debounce(function (evt) {
+    if (evt.target === filterFavorite) {
+      window.sorting.onSpecialFiltersChange(filterFavorite, filterInStock, favoriteGoods);
+    } else if (evt.target === filterInStock) {
+      window.sorting.onSpecialFiltersChange(filterInStock, filterFavorite, checkInStock());
+    } else {
+      window.sorting.onFiltersChange(catalog, listFromServer);
+    }
+  }));
+  showAllGoods.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    window.sorting.onShowAllClick(catalog);
+  });
+
+  window.catalog = {
+    checkListFromServerPrice: checkListFromServerPrice,
+    renderDomElements: renderCatalogDomElements,
+    onPriceChangeFilterGoods: onPriceChangeFilterGoods,
+    getInitialCalalog: getInitialCalalog,
+    checkSpecialFilters: checkSpecialFilters
+  };
 })();

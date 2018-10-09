@@ -126,9 +126,17 @@
     window.tabs.setInputsAbility(window.tabs.deliverByCourierBlockInputs, true);
   };
 
+  var checkGoodInOrderAmount = function (object) {
+    var check = order.some(function (item) {
+      return (item.name === object.name && item.amount === object.amount);
+    });
+    return check;
+  };
+
   window.order = {
     addGoodToCart: addGoodToCart,
-    enableFormInputs: enableOrderFormInputs
+    enableFormInputs: enableOrderFormInputs,
+    checkGoodInOrderAmount: checkGoodInOrderAmount
   };
 
   disableOrderFormInputs();
