@@ -9,9 +9,9 @@
   var emptyBlockTemplate = emptyBlock.cloneNode(true);
   var orderForm = document.querySelector('.buy__form');
   var orderFormInputs = orderForm.querySelectorAll('input');
-  var submitBtn = document.querySelector('.buy__submit-btn');
+  var submitButton = document.querySelector('.buy__submit-btn');
 
-  var onDecreaseBtnClick = function (object, element) {
+  var onDecreaseButtonClick = function (object, element) {
     if (object.orderAmount === 1) {
       onOrderCardCloseClick(object);
       headerBasket.textContent = 'В корзине: ' + order.length + ' ' + window.utils.getDeclension(order.length, ['товар', 'товара', 'товаров']);
@@ -24,7 +24,7 @@
     }
   };
 
-  var onIncreaseBtnClick = function (object, element) {
+  var onIncreaseButtonClick = function (object, element) {
     if (object.amount > object.orderAmount) {
       object.orderAmount++;
       element.querySelector('.card-order__count').value = object.orderAmount;
@@ -45,10 +45,12 @@
       }
     });
     decreaseBtn.addEventListener('click', function () {
-      onDecreaseBtnClick(object, orderElement);
+      onDecreaseButtonClick(object, orderElement);
+      window.catalog.checkGoodsLeft(object);
     });
     increaseBtn.addEventListener('click', function () {
-      onIncreaseBtnClick(object, orderElement);
+      onIncreaseButtonClick(object, orderElement);
+      window.catalog.checkGoodsLeft(object);
     });
     orderElement.querySelector('.card-order__title').textContent = object.name;
     orderElement.querySelector('.card-order__img').src = 'img/cards/' + object.picture;
@@ -100,6 +102,17 @@
     return index;
   };
 
+  var checkCatalogGoodAmount = function (object) {
+    var index = checkGoodsInOrder(order, object.name);
+    var amount;
+    if (index === -1) {
+      amount = object.amount;
+    } else {
+      amount = object.amount - order[index].orderAmount;
+    }
+    return amount;
+  };
+
   var onOrderCardCloseClick = function (object) {
     var index = checkGoodsInOrder(order, object.name);
     order.splice(index, 1);
@@ -114,16 +127,16 @@
   var disableOrderFormInputs = function () {
     orderFormInputs.forEach(function (item) {
       item.disabled = true;
-      submitBtn.disabled = true;
+      submitButton.disabled = true;
     });
   };
 
   var enableOrderFormInputs = function () {
     orderFormInputs.forEach(function (item) {
       item.disabled = false;
-      submitBtn.disabled = false;
+      submitButton.disabled = false;
     });
-    window.tabs.setInputsAbility(window.tabs.deliverByCourierBlockInputs, true);
+    window.tabs.setInputsAbility(window.tabs.deliveryByCourierInputs, true);
   };
 
   var checkGoodInOrderAmount = function (object) {
@@ -136,7 +149,9 @@
   window.order = {
     addGoodToCart: addGoodToCart,
     enableFormInputs: enableOrderFormInputs,
-    checkGoodInOrderAmount: checkGoodInOrderAmount
+    checkGoods: checkGoodsInOrder,
+    checkGoodAmount: checkGoodInOrderAmount,
+    checkCatalogGoodAmount: checkCatalogGoodAmount
   };
 
   disableOrderFormInputs();

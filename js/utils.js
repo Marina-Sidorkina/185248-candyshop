@@ -24,7 +24,7 @@
       2 : cases[(number % 10 < 5) ? number % 10 : 5]];
   };
 
-  var onEscKeydown = function (keyCode) {
+  var onEscapeKeydown = function (keyCode) {
     return (keyCode === ESC);
   };
 
@@ -33,6 +33,6 @@
     getRandomBoolean: getRandomBoolean,
     createTagElement: createTagElement,
     getDeclension: getDeclension,
-    onEscKeydown: onEscKeydown
+    onEscapeKeydown: onEscapeKeydown
   };
 })();

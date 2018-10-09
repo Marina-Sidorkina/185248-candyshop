@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var buyForm = document.querySelector('.buy__form');
+  var buyingForm = document.querySelector('.buy__form');
   var paymentInputsBlock = document.querySelector('.payment__inputs');
   var cardNumberInput = paymentInputsBlock.querySelector('input[name = "card-number"]');
   var dateInput = paymentInputsBlock.querySelector('input[name = "card-date"]');
@@ -9,19 +9,19 @@
   var nameInput = paymentInputsBlock.querySelector('input[name = "cardholder"]');
   var paymentInputs = paymentInputsBlock.querySelectorAll('input');
   var cardStatus = document.querySelector('.payment__card-status');
-  var storeImg = document.querySelector('.deliver__store-map-img');
+  var storeImage = document.querySelector('.deliver__store-map-img');
   var stationsBlock = document.querySelector('.deliver__stores');
   var stations = stationsBlock.querySelectorAll('li');
-  var modalApproved = document.querySelector('.modal--approved');
-  var modalApprovedClose = modalApproved.querySelector('.modal__close');
+  var successNotification = document.querySelector('.modal--approved');
+  var closingButton = successNotification.querySelector('.modal__close');
 
   var switchImage = function () {
     stations.forEach(function (item) {
       item.addEventListener('click', function () {
         var label = item.querySelector('label');
         var input = item.querySelector('input');
-        storeImg.src = 'img/map/' + input.value + '.jpg';
-        storeImg.alt = label.textContent;
+        storeImage.src = 'img/map/' + input.value + '.jpg';
+        storeImage.alt = label.textContent;
       });
     });
   };
@@ -97,11 +97,11 @@
   };
 
   var onFormSubmit = function () {
-    if (buyForm.checkValidity()) {
-      modalApproved.classList.remove('modal--hidden');
+    if (buyingForm.checkValidity()) {
+      successNotification.classList.remove('modal--hidden');
       window.addEventListener('keydown', function (evt) {
-        if (window.utils.onEscKeydown(evt.keyCode)) {
-          onModalApprovedClose();
+        if (window.utils.onEscapeKeydown(evt.keyCode)) {
+          onClosingButtonClick();
         }
       });
     }
@@ -119,23 +119,23 @@
     }
   };
 
-  var onModalApprovedClose = function () {
-    modalApproved.classList.add('modal--hidden');
-    buyForm.reset();
+  var onClosingButtonClick = function () {
+    successNotification.classList.add('modal--hidden');
+    buyingForm.reset();
   };
 
   var onLoad = function () {
-    modalApproved.classList.remove('modal--hidden');
-    modalApprovedClose.addEventListener('click', onModalApprovedClose);
+    successNotification.classList.remove('modal--hidden');
+    closingButton.addEventListener('click', onClosingButtonClick);
   };
 
-  buyForm.addEventListener('submit', function (evt) {
-    window.backend.send(new FormData(buyForm), onLoad, window.backend.onLoadAndSendDataError);
+  buyingForm.addEventListener('submit', function (evt) {
+    window.backend.send(new FormData(buyingForm), onLoad, window.backend.onLoadAndSendDataError);
     evt.preventDefault();
   });
   switchImage();
   cardStatus.textContent = 'Не определён';
-  buyForm.addEventListener('submit', onFormSubmit);
+  buyingForm.addEventListener('submit', onFormSubmit);
   cardNumberInput.addEventListener('input', onCardNumberInputInvalid);
   dateInput.addEventListener('input', onDateInputInvalid);
   cvcInput.addEventListener('input', onCvcInputInvalid);

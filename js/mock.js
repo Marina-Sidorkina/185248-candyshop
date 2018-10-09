@@ -1,27 +1,27 @@
 'use strict';
 
 (function () {
-  var amountParams = {
+  var amountParameters = {
     MIN: 0,
     MAX: 20
   };
-  var priceParams = {
+  var priceParameters = {
     MIN: 100,
     MAX: 1500
   };
-  var weightParams = {
+  var weightParameters = {
     MIN: 30,
     MAX: 300
   };
-  var valueParams = {
+  var valueParameters = {
     MIN: 1,
     MAX: 5
   };
-  var numberParams = {
+  var numberParameters = {
     MIN: 10,
     MAX: 900
   };
-  var energyParams = {
+  var energyParameters = {
     MIN: 70,
     MAX: 500
   };
@@ -107,7 +107,7 @@
     'виллабаджо'
   ];
 
-  var getContentArr = function () {
+  var getContentArraay = function () {
     var arrayElements = [];
     for (var i = 0; i < window.utils.getRandomNumber(window.utils.getRandomNumber(1, CONTENTS_ITEMS.length), CONTENTS_ITEMS.length); i++) {
       arrayElements[i] = CONTENTS_ITEMS[window.utils.getRandomNumber(0, CONTENTS_ITEMS.length)];
@@ -119,17 +119,17 @@
     return {
       name: GOODS_NAMES[window.utils.getRandomNumber(0, GOODS_NAMES.length)],
       picture: PICTURES_LINKS[window.utils.getRandomNumber(0, PICTURES_LINKS.length)],
-      amount: window.utils.getRandomNumber(amountParams.MIN, amountParams.MAX + 1),
-      price: window.utils.getRandomNumber(priceParams.MIN, priceParams.MAX + 1),
-      weight: window.utils.getRandomNumber(weightParams.MIN, weightParams.MAX + 1),
+      amount: window.utils.getRandomNumber(amountParameters.MIN, amountParameters.MAX + 1),
+      price: window.utils.getRandomNumber(priceParameters.MIN, priceParameters.MAX + 1),
+      weight: window.utils.getRandomNumber(weightParameters.MIN, weightParameters.MAX + 1),
       rating: {
-        value: window.utils.getRandomNumber(valueParams.MIN, valueParams.MAX + 1),
-        number: window.utils.getRandomNumber(numberParams.MIN, numberParams.MAX + 1)
+        value: window.utils.getRandomNumber(valueParameters.MIN, valueParameters.MAX + 1),
+        number: window.utils.getRandomNumber(numberParameters.MIN, numberParameters.MAX + 1)
       },
       nutritionFacts: {
         sugar: window.utils.getRandomBoolean(),
-        energy: window.utils.getRandomNumber(energyParams.MIN, energyParams.MAX + 1),
-        contents: getContentArr()
+        energy: window.utils.getRandomNumber(energyParameters.MIN, energyParameters.MAX + 1),
+        contents: getContentArraay()
       }
     };
   };
