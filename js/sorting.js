@@ -7,6 +7,18 @@
     'Мармелад',
     'Зефир'
   ];
+  var catalogCardsBlock = document.querySelector('.catalog__cards');
+  var typeFilters = document.querySelectorAll('.input-btn__input--type');
+  var sortingFilters = document.querySelectorAll('.input-btn__input--sorting');
+  var strongFilters = document.querySelectorAll('.input-btn__input--strong');
+  var filtersBlock = document.querySelector('.catalog__sidebar');
+  var allFilters = filtersBlock.querySelectorAll('.input-btn__input');
+  var priceRangeCount = document.querySelector('.range__count');
+  var goodsFavoriteCount = document.querySelector('.input-btn__item-count--favorite');
+  var goodsInStockCount = document.querySelector('.input-btn__item-count--instock');
+  var goodsByTypeCounts = document.querySelectorAll('.input-btn__item-count--type');
+  var goodsByContentCounts = document.querySelectorAll('.input-btn__item-count--content');
+  var noResultBlock = document.querySelector('#empty-filters').content.querySelector('div');
   var sortingVariants = {
     0: function (a, b) {
       return b.rating.number - a.rating.number;
@@ -32,18 +44,6 @@
       return (!item.nutritionFacts.gluten);
     }
   };
-  var catalogCards = document.querySelector('.catalog__cards');
-  var typeFilters = document.querySelectorAll('.input-btn__input--type');
-  var sortingFilters = document.querySelectorAll('.input-btn__input--sorting');
-  var strongFilters = document.querySelectorAll('.input-btn__input--strong');
-  var filtersBlock = document.querySelector('.catalog__sidebar');
-  var allFilters = filtersBlock.querySelectorAll('.input-btn__input');
-  var priceRangeCount = document.querySelector('.range__count');
-  var goodsFavoriteCount = document.querySelector('.input-btn__item-count--favorite');
-  var goodsInStockCount = document.querySelector('.input-btn__item-count--instock');
-  var goodsByTypeCount = document.querySelectorAll('.input-btn__item-count--type');
-  var goodsByContentCount = document.querySelectorAll('.input-btn__item-count--content');
-  var noResultBlock = document.querySelector('#empty-filters').content.querySelector('div');
 
   var createCatalogElements = function (array) {
     var catalogFragment = document.createDocumentFragment();
@@ -55,17 +55,17 @@
   };
 
   var onCatalogCardsLoading = function () {
-    catalogCards.classList.remove('catalog__cards--load');
+    catalogCardsBlock.classList.remove('catalog__cards--load');
   };
 
   var replaceCardsInCatalog = function (array) {
-    catalogCards.innerHTML = '';
-    catalogCards.appendChild(createCatalogElements(array));
+    catalogCardsBlock.innerHTML = '';
+    catalogCardsBlock.appendChild(createCatalogElements(array));
   };
 
   var showNoResultBlock = function () {
-    catalogCards.innerHTML = '';
-    catalogCards.appendChild(noResultBlock);
+    catalogCardsBlock.innerHTML = '';
+    catalogCardsBlock.appendChild(noResultBlock);
   };
 
   var checkContent = function (item) {
@@ -112,12 +112,12 @@
       item.disabled = false;
     });
     window.catalog.checkListFromServerPrice();
-    window.catalog.getInitialCalalog();
+    window.catalog.getInitialCardsList();
   });
 
   var onSpecialFiltersChange = window.debounce(function (filterChanged, filterToBlock, array) {
     if (filterChanged.checked) {
-      window.filter.resetPriceRangeFilterBtnsValues();
+      window.filter.resetPriceButtonsValues();
       strongFilters.forEach(function (item) {
         item.checked = false;
         item.disabled = true;
@@ -139,35 +139,31 @@
     return (!array.length) ? showNoResultBlock() : replaceCardsInCatalog(array);
   });
 
-  var onShowAllClick = window.debounce(function (catalog) {
-    var array;
+  var onShowAllClick = window.debounce(function () {
     allFilters.forEach(function (item) {
       item.checked = false;
     });
     strongFilters.forEach(function (item) {
       item.disabled = false;
     });
-    sortingFilters[0].checked = true;
+    window.filter.resetPriceButtonsValues();
     window.catalog.checkListFromServerPrice();
-    array = catalog.sort(function (a, b) {
-      return b.rating.number - a.rating.number;
-    });
-    replaceCardsInCatalog(array);
+    window.catalog.getInitialCardsList();
   });
 
   var getAmountByType = function (index, kind, listFromServer) {
     var amount = listFromServer.filter(function (item) {
       return item.kind === kind;
     });
-    goodsByTypeCount[index].textContent = '(' + amount.length + ')';
+    goodsByTypeCounts[index].textContent = '(' + amount.length + ')';
   };
 
   var getAmountByContent = function (listFromServer) {
-    goodsByContentCount.forEach(function (span, index) {
+    goodsByContentCounts.forEach(function (span, index) {
       var amount = listFromServer.filter(function (item) {
         return filterByContentVariants[span.id](item);
       });
-      goodsByContentCount[index].textContent = '(' + amount.length + ')';
+      goodsByContentCounts[index].textContent = '(' + amount.length + ')';
     });
   };
 

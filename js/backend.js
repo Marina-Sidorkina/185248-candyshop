@@ -22,7 +22,7 @@
   };
 
   var onWindowEscKeydown = function (evt) {
-    if (window.utils.onEscKeydown(evt.keyCode)) {
+    if (window.utils.onEscapeKeydown(evt.keyCode)) {
       onModalErrorClose();
     }
   };
@@ -33,7 +33,7 @@
       modalError.classList.remove('modal--hidden');
       modalErrorClose.addEventListener('click', onModalErrorClose);
       window.addEventListener('keydown', function (evt) {
-        window.utils.onEscKeydown(evt, modalError);
+        window.utils.onEscapeKeydown(evt, modalError);
       });
       modalErrorMessage.textContent = error;
       window.addEventListener('keydown', onWindowEscKeydown);

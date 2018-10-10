@@ -9,9 +9,9 @@
   var emptyBlockTemplate = emptyBlock.cloneNode(true);
   var orderForm = document.querySelector('.buy__form');
   var orderFormInputs = orderForm.querySelectorAll('input');
-  var submitBtn = document.querySelector('.buy__submit-btn');
+  var submitButton = document.querySelector('.buy__submit-btn');
 
-  var onDecreaseBtnClick = function (object, element) {
+  var onDecreaseButtonClick = function (object, element) {
     if (object.orderAmount === 1) {
       onOrderCardCloseClick(object);
       headerBasket.textContent = 'В корзине: ' + order.length + ' ' + window.utils.getDeclension(order.length, ['товар', 'товара', 'товаров']);
@@ -24,7 +24,7 @@
     }
   };
 
-  var onIncreaseBtnClick = function (object, element) {
+  var onIncreaseButtonClick = function (object, element) {
     if (object.amount > object.orderAmount) {
       object.orderAmount++;
       element.querySelector('.card-order__count').value = object.orderAmount;
@@ -39,16 +39,14 @@
     orderCardClose.addEventListener('click', function (evt) {
       evt.preventDefault();
       onOrderCardCloseClick(object);
-      headerBasket.textContent = 'В корзине: ' + order.length + ' ' + window.utils.getDeclension(order.length, ['товар', 'товара', 'товаров']);
-      if (!order.length) {
-        disableOrderFormInputs();
-      }
     });
     decreaseBtn.addEventListener('click', function () {
-      onDecreaseBtnClick(object, orderElement);
+      onDecreaseButtonClick(object, orderElement);
+      window.catalog.checkGoodsLeft(object);
     });
     increaseBtn.addEventListener('click', function () {
-      onIncreaseBtnClick(object, orderElement);
+      onIncreaseButtonClick(object, orderElement);
+      window.catalog.checkGoodsLeft(object);
     });
     orderElement.querySelector('.card-order__title').textContent = object.name;
     orderElement.querySelector('.card-order__img').src = 'img/cards/' + object.picture;
@@ -61,10 +59,10 @@
 
   var createOrderElements = function (array) {
     var orderFragment = document.createDocumentFragment();
-    for (var i = 0; i < array.length; i++) {
-      var element = renderOrderDomElements(array[i]);
+    array.forEach(function (item) {
+      var element = renderOrderDomElements(item);
       orderFragment.appendChild(element);
-    }
+    });
     return orderFragment;
   };
 
@@ -90,14 +88,24 @@
   };
 
   var checkGoodsInOrder = function (array, objectName) {
-    var index = -1;
-    for (var i = 0; i < array.length; i++) {
-      if (array[i].name === objectName) {
-        index = i;
-        break;
+    var indexInArray = -1;
+    array.forEach(function (item, index) {
+      if (item.name === objectName) {
+        indexInArray = index;
       }
+    });
+    return indexInArray;
+  };
+
+  var checkCatalogGoodAmount = function (object) {
+    var index = checkGoodsInOrder(order, object.name);
+    var amount;
+    if (index === -1) {
+      amount = object.amount;
+    } else {
+      amount = object.amount - order[index].orderAmount;
     }
-    return index;
+    return amount;
   };
 
   var onOrderCardCloseClick = function (object) {
@@ -108,22 +116,25 @@
       cartBlock.appendChild(createOrderElements(order));
     } else {
       cartBlock.appendChild(emptyBlockTemplate);
+      disableOrderFormInputs();
     }
+    window.catalog.returnInitialAmount(object);
+    headerBasket.textContent = 'В корзине: ' + order.length + ' ' + window.utils.getDeclension(order.length, ['товар', 'товара', 'товаров']);
   };
 
   var disableOrderFormInputs = function () {
     orderFormInputs.forEach(function (item) {
       item.disabled = true;
-      submitBtn.disabled = true;
+      submitButton.disabled = true;
     });
   };
 
   var enableOrderFormInputs = function () {
     orderFormInputs.forEach(function (item) {
       item.disabled = false;
-      submitBtn.disabled = false;
+      submitButton.disabled = false;
     });
-    window.tabs.setInputsAbility(window.tabs.deliverByCourierBlockInputs, true);
+    window.tabs.setInputsAbility(window.tabs.deliveryByCourierInputs, true);
   };
 
   var checkGoodInOrderAmount = function (object) {
@@ -133,11 +144,13 @@
     return check;
   };
 
+  disableOrderFormInputs();
+
   window.order = {
     addGoodToCart: addGoodToCart,
     enableFormInputs: enableOrderFormInputs,
-    checkGoodInOrderAmount: checkGoodInOrderAmount
+    checkGoods: checkGoodsInOrder,
+    checkGoodAmount: checkGoodInOrderAmount,
+    checkCatalogGoodAmount: checkCatalogGoodAmount
   };
-
-  disableOrderFormInputs();
 })();

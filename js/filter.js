@@ -4,51 +4,51 @@
   var PRICE_RANGE = 100;
   var priceRangeFilter = document.querySelector('.range__filter');
   var priceRangeFilterCoordinate = priceRangeFilter.getBoundingClientRect();
-  var PriceRangeStart = priceRangeFilterCoordinate.x;
-  var PriceRangeEnd = priceRangeFilterCoordinate.right;
-  var PriceRangWidth = priceRangeFilterCoordinate.width;
-  var PriceRangeStep = PriceRangWidth / PRICE_RANGE;
-  var priceRangeFilterBtnLeft = document.querySelector('.range__btn--left');
-  var priceRangeFilterBtnRight = document.querySelector('.range__btn--right');
+  var priceRangeStart = priceRangeFilterCoordinate.x;
+  var priceRangeEnd = priceRangeFilterCoordinate.right;
+  var priceRangWidth = priceRangeFilterCoordinate.width;
+  var priceRangeStep = priceRangWidth / PRICE_RANGE;
+  var priceRangeLeftButton = document.querySelector('.range__btn--left');
+  var priceRangeRightButton = document.querySelector('.range__btn--right');
   var priceRangeMinPinValue = document.querySelector('.range__price--min');
   var priceRangeMaxPinValue = document.querySelector('.range__price--max');
-  var priceRangeFilterBtnShift = priceRangeFilterBtnLeft.getBoundingClientRect().width / 2;
-  var fillLine = document.querySelector('.range__fill-line');
+  var priceRangeButtonShift = priceRangeLeftButton.getBoundingClientRect().width / 2;
+  var coloredLine = document.querySelector('.range__fill-line');
 
-  var resetPriceRangeFilterBtnsValues = function () {
-    priceRangeFilterBtnLeft.style.left = (0 - priceRangeFilterBtnShift) + 'px';
-    priceRangeFilterBtnRight.style.left = (0 + PriceRangWidth - priceRangeFilterBtnShift) + 'px';
-    fillLine.style.left = 0 + '%';
-    fillLine.style.right = 0 + '%';
-    priceRangeMinPinValue.textContent = getPriceRangePinCoordinate(priceRangeFilterBtnLeft);
-    priceRangeMaxPinValue.textContent = getPriceRangePinCoordinate(priceRangeFilterBtnRight);
+  var resetPriceButtonsValues = function () {
+    priceRangeLeftButton.style.left = (0 - priceRangeButtonShift) + 'px';
+    priceRangeRightButton.style.left = (0 + priceRangWidth - priceRangeButtonShift) + 'px';
+    coloredLine.style.left = 0 + '%';
+    coloredLine.style.right = 0 + '%';
+    priceRangeMinPinValue.textContent = getPriceRangePinCoordinate(priceRangeLeftButton);
+    priceRangeMaxPinValue.textContent = getPriceRangePinCoordinate(priceRangeRightButton);
   };
 
   var getPriceRangePinCoordinate = function (evtTarget) {
     var pinCoordinate = evtTarget.getBoundingClientRect();
     var pinX = pinCoordinate.x + (pinCoordinate.width / 2);
-    var pinValue = Math.round((pinX - PriceRangeStart) / PriceRangeStep);
+    var pinValue = Math.round((pinX - priceRangeStart) / priceRangeStep);
     return pinValue;
   };
 
   var checkPriceRange = function (item) {
-    var min = getPriceRangePinCoordinate(priceRangeFilterBtnLeft);
-    var max = getPriceRangePinCoordinate(priceRangeFilterBtnRight);
+    var min = getPriceRangePinCoordinate(priceRangeLeftButton);
+    var max = getPriceRangePinCoordinate(priceRangeRightButton);
     return (item.price >= min && item.price <= max);
   };
 
   var fillTheLine = function () {
-    fillLine.style.left = priceRangeFilterBtnLeft.offsetLeft + 'px';
-    fillLine.style.right = PriceRangWidth - priceRangeFilterBtnRight.offsetLeft + 'px';
+    coloredLine.style.left = priceRangeLeftButton.offsetLeft + 'px';
+    coloredLine.style.right = priceRangWidth - priceRangeRightButton.offsetLeft + 'px';
   };
 
   var onFilterLeftBtnMouseDown = function (evt) {
     if (!window.catalog.checkSpecialFilters()) {
       var startCoord = evt.clientX;
-      var secondBtnX = priceRangeFilterBtnRight.getBoundingClientRect().x;
+      var secondBtnX = priceRangeRightButton.getBoundingClientRect().x;
       var onMouseMove = function (moveEvt) {
         moveEvt.preventDefault();
-        if (moveEvt.clientX >= (PriceRangeStart + priceRangeFilterBtnShift)
+        if (moveEvt.clientX >= (priceRangeStart + priceRangeButtonShift)
         && moveEvt.clientX < secondBtnX) {
           var shift = startCoord - moveEvt.clientX;
           startCoord = moveEvt.clientX;
@@ -72,10 +72,10 @@
   var onFilterRightBtnMouseDown = function (evt) {
     if (!window.catalog.checkSpecialFilters()) {
       var startCoord = evt.clientX;
-      var secondBtnRight = priceRangeFilterBtnLeft.getBoundingClientRect().right;
+      var secondBtnRight = priceRangeLeftButton.getBoundingClientRect().right;
       var onMouseMove = function (moveEvt) {
         moveEvt.preventDefault();
-        if (moveEvt.clientX <= (PriceRangeEnd - priceRangeFilterBtnShift)
+        if (moveEvt.clientX <= (priceRangeEnd - priceRangeButtonShift)
         && moveEvt.clientX > secondBtnRight) {
           var shift = startCoord - moveEvt.clientX;
           startCoord = moveEvt.clientX;
@@ -96,13 +96,13 @@
     }
   };
 
-  priceRangeMinPinValue.textContent = getPriceRangePinCoordinate(priceRangeFilterBtnLeft);
-  priceRangeMaxPinValue.textContent = getPriceRangePinCoordinate(priceRangeFilterBtnRight);
-  priceRangeFilterBtnLeft.addEventListener('mousedown', onFilterLeftBtnMouseDown);
-  priceRangeFilterBtnRight.addEventListener('mousedown', onFilterRightBtnMouseDown);
+  priceRangeMinPinValue.textContent = getPriceRangePinCoordinate(priceRangeLeftButton);
+  priceRangeMaxPinValue.textContent = getPriceRangePinCoordinate(priceRangeRightButton);
+  priceRangeLeftButton.addEventListener('mousedown', onFilterLeftBtnMouseDown);
+  priceRangeRightButton.addEventListener('mousedown', onFilterRightBtnMouseDown);
 
   window.filter = {
     checkPriceRange: checkPriceRange,
-    resetPriceRangeFilterBtnsValues: resetPriceRangeFilterBtnsValues
+    resetPriceButtonsValues: resetPriceButtonsValues
   };
 })();
