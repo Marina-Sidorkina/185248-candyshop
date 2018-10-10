@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var LITTLE_AMOUNT = 5;
   var ratingVariants = {
     1: '--one',
     2: '--two',
@@ -22,7 +23,7 @@
     if (!amount) {
       return 'card--soon';
     } else {
-      return amount > 5 ? 'card--in-stock' : 'card--little';
+      return amount > LITTLE_AMOUNT ? 'card--in-stock' : 'card--little';
     }
   };
 
@@ -49,10 +50,10 @@
   var renderCatalogDomElements = function (object) {
     var catalogElement = cardTemplate.cloneNode(true);
     var goodRating = catalogElement.querySelector('.stars__rating');
-    var btn = catalogElement.querySelector('.card__btn');
-    var btnFavorite = catalogElement.querySelector('.card__btn-favorite');
+    var button = catalogElement.querySelector('.card__btn');
+    var favoriteButton = catalogElement.querySelector('.card__btn-favorite');
     handleAmountStatus(object, catalogElement);
-    btn.addEventListener('click', function (evt) {
+    button.addEventListener('click', function (evt) {
       onCatalogElementButtonClick(evt, object);
       handleAmountStatus(object, catalogElement);
     });
@@ -69,32 +70,46 @@
     catalogElement.querySelector('.card__characteristic').textContent = (object.nutritionFacts.sugar ?
       'Содержит сахар, ' : 'Без сахара, ') + object.nutritionFacts.energy + ' ккал';
     catalogElement.querySelector('.card__composition-list').textContent = object.nutritionFacts.contents;
-    handleFavoriteStatus(object, btnFavorite);
-    btnFavorite.addEventListener('click', function (evt) {
-      evt.preventDefault();
-      btnFavorite.classList.toggle('card__btn-favorite--selected');
-      if (btnFavorite.classList.contains('card__btn-favorite--selected') && !object.favorite) {
-        object.favorite = true;
-        favoriteGoods[favoriteGoods.length] = object;
-      } else {
-        object.favorite = false;
-        for (var i = 0; i < favoriteGoods.length; i++) {
-          if (favoriteGoods[i].name === object.name) {
-            favoriteGoods.splice(i, 1);
-          }
-        }
-      }
+    handleFavoriteStatus(object, favoriteButton);
+    favoriteButton.addEventListener('click', function (evt) {
+      onFavoriteButtonClick(evt, object);
     });
     return catalogElement;
+  };
+
+  var onFavoriteButtonClick = function (evt, object) {
+    evt.preventDefault();
+    evt.target.classList.toggle('card__btn-favorite--selected');
+    if (evt.target.classList.contains('card__btn-favorite--selected') && !object.favorite) {
+      object.favorite = true;
+      favoriteGoods[favoriteGoods.length] = object;
+    } else {
+      object.favorite = false;
+      favoriteGoods.forEach(function (item, index) {
+        if (item.name === object.name) {
+          favoriteGoods.splice(index, 1);
+        }
+      });
+    }
+  };
+
+  var setAttributeValue = function (object, amount) {
+    var card = document.getElementById(object.name);
+    var name = getAmountStatus(amount);
+    card.classList.remove('card--in-stock', 'card--little', 'card--soon');
+    card.classList.add(name);
   };
 
   var checkGoodsLeft = function (object) {
     var index = window.order.checkGoods(catalog, object.name);
     var amount = catalog[index].amount - object.orderAmount;
-    var card = document.getElementById(object.name);
-    var name = getAmountStatus(amount);
-    card.classList.remove('card--in-stock', 'card--little', 'card--soon');
-    card.classList.add(name);
+    setAttributeValue(object, amount);
+  };
+
+  var returnInitialAmount = function (object) {
+    var index = window.order.checkGoods(catalog, object.name);
+    var amount = getAmountStatus(catalog[index].amount);
+    setAttributeValue(object, amount);
   };
 
   var checkSpecialFilters = function () {
@@ -102,11 +117,8 @@
   };
 
   var checkInStock = function () {
-    var list = listFromServerItems.filter(function (item) {
-      return (item.amount > 0);
-    });
-    var array = list.filter(function (item) {
-      return (!window.order.checkGoodAmount(item));
+    var array = listFromServerItems.filter(function (item) {
+      return (!window.order.checkGoodAmount(item) && item.amount > 0);
     });
     return array;
   };
@@ -122,14 +134,11 @@
   };
 
   var checkListFromServerPrice = function () {
-    var array = listFromServerItems.filter(window.filter.checkPriceRange);
-    catalog = array.slice();
+    catalog = listFromServerItems.filter(window.filter.checkPriceRange).slice();
   };
 
   var handleFavoriteStatus = function (object, element) {
-    if (object.favorite) {
-      element.classList.add('card__btn-favorite--selected');
-    }
+    element.classList.toggle('card__btn-favorite--selected', !!object.favorite);
   };
 
   var onLoad = function (array) {
@@ -165,6 +174,7 @@
     onPriceChangeFilterGoods: onPriceChangeFilterGoods,
     getInitialCardsList: getInitialCardsList,
     checkSpecialFilters: checkSpecialFilters,
-    checkGoodsLeft: checkGoodsLeft
+    checkGoodsLeft: checkGoodsLeft,
+    returnInitialAmount: returnInitialAmount
   };
 })();

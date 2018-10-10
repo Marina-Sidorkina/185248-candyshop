@@ -39,10 +39,6 @@
     orderCardClose.addEventListener('click', function (evt) {
       evt.preventDefault();
       onOrderCardCloseClick(object);
-      headerBasket.textContent = 'В корзине: ' + order.length + ' ' + window.utils.getDeclension(order.length, ['товар', 'товара', 'товаров']);
-      if (!order.length) {
-        disableOrderFormInputs();
-      }
     });
     decreaseBtn.addEventListener('click', function () {
       onDecreaseButtonClick(object, orderElement);
@@ -63,10 +59,10 @@
 
   var createOrderElements = function (array) {
     var orderFragment = document.createDocumentFragment();
-    for (var i = 0; i < array.length; i++) {
-      var element = renderOrderDomElements(array[i]);
+    array.forEach(function (item) {
+      var element = renderOrderDomElements(item);
       orderFragment.appendChild(element);
-    }
+    });
     return orderFragment;
   };
 
@@ -92,14 +88,13 @@
   };
 
   var checkGoodsInOrder = function (array, objectName) {
-    var index = -1;
-    for (var i = 0; i < array.length; i++) {
-      if (array[i].name === objectName) {
-        index = i;
-        break;
+    var indexInArray = -1;
+    array.forEach(function (item, index) {
+      if (item.name === objectName) {
+        indexInArray = index;
       }
-    }
-    return index;
+    });
+    return indexInArray;
   };
 
   var checkCatalogGoodAmount = function (object) {
@@ -121,7 +116,10 @@
       cartBlock.appendChild(createOrderElements(order));
     } else {
       cartBlock.appendChild(emptyBlockTemplate);
+      disableOrderFormInputs();
     }
+    window.catalog.returnInitialAmount(object);
+    headerBasket.textContent = 'В корзине: ' + order.length + ' ' + window.utils.getDeclension(order.length, ['товар', 'товара', 'товаров']);
   };
 
   var disableOrderFormInputs = function () {
@@ -146,6 +144,8 @@
     return check;
   };
 
+  disableOrderFormInputs();
+
   window.order = {
     addGoodToCart: addGoodToCart,
     enableFormInputs: enableOrderFormInputs,
@@ -153,6 +153,4 @@
     checkGoodAmount: checkGoodInOrderAmount,
     checkCatalogGoodAmount: checkCatalogGoodAmount
   };
-
-  disableOrderFormInputs();
 })();

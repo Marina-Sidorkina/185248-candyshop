@@ -30,18 +30,18 @@
     string = string.replace(/\s/g, '');
     var cardNumber = string.split('').map(Number);
     var sum = 0;
-    for (var i = 0; i < cardNumber.length; i++) {
-      if ((cardNumber.length - i) % 2 !== 0) {
-        sum += cardNumber[i];
+    cardNumber.forEach(function (item, index) {
+      if ((cardNumber.length - index) % 2 !== 0) {
+        sum += item;
       } else {
-        if (cardNumber[i] * 2 > 9) {
-          var multiplication = String(cardNumber[i] * 2).split('').map(Number);
+        if (item * 2 > 9) {
+          var multiplication = String(item * 2).split('').map(Number);
           sum += multiplication[0] + multiplication[1];
         } else {
-          sum += (cardNumber[i] * 2);
+          sum += (item * 2);
         }
       }
-    }
+    });
     return (sum % 10 === 0);
   };
 
@@ -87,13 +87,13 @@
   };
 
   var checkValidity = function () {
-    for (var i = 0; i < paymentInputs.length; i++) {
-      if (paymentInputs[i].checkValidity() && !paymentInputs[i].disabled) {
+    paymentInputs.forEach(function (item) {
+      if (item.checkValidity() && !item.disabled) {
         cardStatus.textContent = 'Одобрен';
       } else {
         cardStatus.textContent = 'Не определён';
       }
-    }
+    });
   };
 
   var onFormSubmit = function () {
