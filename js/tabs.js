@@ -52,12 +52,8 @@
     }
   };
 
-  paymentToggleTab.addEventListener('change', function (evt) {
-    onPaymentTabChange(evt);
-  });
-  deliveryToggleTab.addEventListener('change', function (evt) {
-    onDeliveryTabChange(evt);
-  });
+  paymentToggleTab.addEventListener('change', onPaymentTabChange);
+  deliveryToggleTab.addEventListener('change', onDeliveryTabChange);
 
   window.tabs = {
     setInputsAbility: setInputsAbility,

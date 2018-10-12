@@ -129,9 +129,7 @@
     evt.preventDefault();
   });
   buyingForm.addEventListener('submit', onFormSubmit);
-  buyingForm.addEventListener('change', function (evt) {
-    onBuyingFormChange(evt);
-  });
+  buyingForm.addEventListener('change', onBuyingFormChange);
   cardNumberInput.addEventListener('input', onCardNumberInputInvalid);
   dateInput.addEventListener('input', onDateInputInvalid);
   cvcInput.addEventListener('input', onCvcInputInvalid);
