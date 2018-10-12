@@ -7,9 +7,15 @@
   var emptyBlock = document.querySelector('.goods__card-empty');
   var headerBasket = document.querySelector('.main-header__basket');
   var emptyBlockTemplate = emptyBlock.cloneNode(true);
-  var orderForm = document.querySelector('.buy__form');
+  var orderForm = document.querySelector('.buy');
   var orderFormInputs = orderForm.querySelectorAll('input');
+  var deliveryTextArea = orderForm.querySelector('.deliver__textarea');
   var submitButton = document.querySelector('.buy__submit-btn');
+
+  var editValues = function (object, element) {
+    element.querySelector('.card-order__count').value = object.orderAmount;
+    element.querySelector('.card-order__price').textContent = object.orderAmount * object.price;
+  };
 
   var onDecreaseButtonClick = function (object, element) {
     if (object.orderAmount === 1) {
@@ -20,14 +26,15 @@
       }
     } else {
       object.orderAmount--;
-      element.querySelector('.card-order__count').value = object.orderAmount;
+      editValues(object, element);
+      window.catalog.checkGoodsLeft(object);
     }
   };
 
   var onIncreaseButtonClick = function (object, element) {
     if (object.amount > object.orderAmount) {
       object.orderAmount++;
-      element.querySelector('.card-order__count').value = object.orderAmount;
+      editValues(object, element);
     }
   };
 
@@ -42,7 +49,6 @@
     });
     decreaseBtn.addEventListener('click', function () {
       onDecreaseButtonClick(object, orderElement);
-      window.catalog.checkGoodsLeft(object);
     });
     increaseBtn.addEventListener('click', function () {
       onIncreaseButtonClick(object, orderElement);
@@ -127,6 +133,7 @@
       item.disabled = true;
       submitButton.disabled = true;
     });
+    deliveryTextArea.disabled = true;
   };
 
   var enableOrderFormInputs = function () {
@@ -134,7 +141,12 @@
       item.disabled = false;
       submitButton.disabled = false;
     });
-    window.tabs.setInputsAbility(window.tabs.deliveryByCourierInputs, true);
+    deliveryTextArea.disabled = false;
+    window.tabs.setInputsAbility(window.tabs.deliveryByCourierInputs, false);
+  };
+
+  var setTextAreaAbility = function (abilityStatus) {
+    deliveryTextArea.disabled = abilityStatus;
   };
 
   var checkGoodInOrderAmount = function (object) {
@@ -151,6 +163,7 @@
     enableFormInputs: enableOrderFormInputs,
     checkGoods: checkGoodsInOrder,
     checkGoodAmount: checkGoodInOrderAmount,
-    checkCatalogGoodAmount: checkCatalogGoodAmount
+    checkCatalogGoodAmount: checkCatalogGoodAmount,
+    setTextAreaAbility: setTextAreaAbility
   };
 })();
