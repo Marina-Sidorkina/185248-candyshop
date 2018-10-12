@@ -96,14 +96,18 @@
   var setAttributeValue = function (object, amount) {
     var card = document.getElementById(object.name);
     var name = getAmountStatus(amount);
-    card.classList.remove('card--in-stock', 'card--little', 'card--soon');
-    card.classList.add(name);
+    if (card) {
+      card.classList.remove('card--in-stock', 'card--little', 'card--soon');
+      card.classList.add(name);
+    }
   };
 
   var checkGoodsLeft = function (object) {
     var index = window.order.checkGoods(catalog, object.name);
-    var amount = catalog[index].amount - object.orderAmount;
-    setAttributeValue(object, amount);
+    if (index) {
+      var amount = catalog[index].amount - object.orderAmount;
+      setAttributeValue(object, amount);
+    }
   };
 
   var returnInitialAmount = function (object) {

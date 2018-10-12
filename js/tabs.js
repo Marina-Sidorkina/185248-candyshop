@@ -22,7 +22,7 @@
     });
   };
 
-  var onPaymentTabClick = function (evt) {
+  var onPaymentTabChange = function (evt) {
     if ((evt.target === paymentByCardButton || evt.target === paymentByCashButton)
     && paymentClickTargetId !== evt.target.id) {
       paymentByCardBlock.classList.toggle('visually-hidden');
@@ -36,7 +36,7 @@
     }
   };
 
-  var onDeliveryTabClick = function (evt) {
+  var onDeliveryTabChange = function (evt) {
     if ((evt.target === deliveryInStoreButton || evt.target === deliveryByCourierButton)
     && deliveryClickTargetId !== evt.target.id) {
       deliveryInStoreBlock.classList.toggle('visually-hidden');
@@ -45,16 +45,18 @@
     }
     if (deliveryClickTargetId === 'deliver__courier') {
       setInputsAbility(deliveryByCourierInputs, false);
+      window.order.setTextAreaAbility(false);
     } else {
       setInputsAbility(deliveryByCourierInputs, true);
+      window.order.setTextAreaAbility(true);
     }
   };
 
-  paymentToggleTab.addEventListener('click', function (evt) {
-    onPaymentTabClick(evt);
+  paymentToggleTab.addEventListener('change', function (evt) {
+    onPaymentTabChange(evt);
   });
-  deliveryToggleTab.addEventListener('click', function (evt) {
-    onDeliveryTabClick(evt);
+  deliveryToggleTab.addEventListener('change', function (evt) {
+    onDeliveryTabChange(evt);
   });
 
   window.tabs = {

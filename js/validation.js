@@ -10,20 +10,14 @@
   var paymentInputs = paymentInputsBlock.querySelectorAll('input');
   var cardStatus = document.querySelector('.payment__card-status');
   var storeImage = document.querySelector('.deliver__store-map-img');
-  var stationsBlock = document.querySelector('.deliver__stores');
-  var stations = stationsBlock.querySelectorAll('li');
+  var stations = buyingForm.elements['store'];
   var successNotification = document.querySelector('.modal--approved');
   var closingButton = successNotification.querySelector('.modal__close');
 
-  var switchImage = function () {
-    stations.forEach(function (item) {
-      item.addEventListener('click', function () {
-        var label = item.querySelector('label');
-        var input = item.querySelector('input');
-        storeImage.src = 'img/map/' + input.value + '.jpg';
-        storeImage.alt = label.textContent;
-      });
-    });
+  var onBuyingFormChange = function (evt) {
+    var label = buyingForm.querySelector('label[for="' + evt.target.id + '"]');
+    storeImage.src = 'img/map/' + stations.value + '.jpg';
+    storeImage.alt = label.textContent;
   };
 
   var checkLuhnAlgorithm = function (string) {
@@ -129,13 +123,15 @@
     closingButton.addEventListener('click', onClosingButtonClick);
   };
 
+  cardStatus.textContent = 'Не определён';
   buyingForm.addEventListener('submit', function (evt) {
     window.backend.send(new FormData(buyingForm), onLoad, window.backend.onLoadAndSendDataError);
     evt.preventDefault();
   });
-  switchImage();
-  cardStatus.textContent = 'Не определён';
   buyingForm.addEventListener('submit', onFormSubmit);
+  buyingForm.addEventListener('change', function (evt) {
+    onBuyingFormChange(evt);
+  });
   cardNumberInput.addEventListener('input', onCardNumberInputInvalid);
   dateInput.addEventListener('input', onDateInputInvalid);
   cvcInput.addEventListener('input', onCvcInputInvalid);
