@@ -22,6 +22,28 @@
     });
   };
 
+  var setPaymentInputsAbility = function () {
+    if (paymentByCardBlock.classList.contains('visually-hidden')) {
+      paymentByCashButton.checked = true;
+      setInputsAbility(paymentByCardBlockInputs, true);
+    } else {
+      paymentByCardButton.checked = true;
+      setInputsAbility(paymentByCardBlockInputs, false);
+    }
+  };
+
+  var setDeliveryInputsAbility = function () {
+    if (deliveryClickTargetId === 'deliver__courier') {
+      deliveryByCourierButton.checked = true;
+      setInputsAbility(deliveryByCourierInputs, false);
+      window.order.setTextAreaAbility(false);
+    } else {
+      deliveryInStoreButton.checked = true;
+      setInputsAbility(deliveryByCourierInputs, true);
+      window.order.setTextAreaAbility(true);
+    }
+  };
+
   var onPaymentTabChange = function (evt) {
     if ((evt.target === paymentByCardButton || evt.target === paymentByCashButton)
     && paymentClickTargetId !== evt.target.id) {
@@ -29,11 +51,7 @@
       paymentByCashBlock.classList.toggle('visually-hidden');
       paymentClickTargetId = evt.target.id;
     }
-    if (paymentByCardBlock.classList.contains('visually-hidden')) {
-      setInputsAbility(paymentByCardBlockInputs, true);
-    } else {
-      setInputsAbility(paymentByCardBlockInputs, false);
-    }
+    setPaymentInputsAbility();
   };
 
   var onDeliveryTabChange = function (evt) {
@@ -43,13 +61,7 @@
       deliveryByCourierBlock.classList.toggle('visually-hidden');
       deliveryClickTargetId = evt.target.id;
     }
-    if (deliveryClickTargetId === 'deliver__courier') {
-      setInputsAbility(deliveryByCourierInputs, false);
-      window.order.setTextAreaAbility(false);
-    } else {
-      setInputsAbility(deliveryByCourierInputs, true);
-      window.order.setTextAreaAbility(true);
-    }
+    setDeliveryInputsAbility();
   };
 
   paymentToggleTab.addEventListener('change', onPaymentTabChange);
@@ -57,6 +69,8 @@
 
   window.tabs = {
     setInputsAbility: setInputsAbility,
-    deliveryByCourierInputs: deliveryByCourierInputs
+    deliveryByCourierInputs: deliveryByCourierInputs,
+    setDeliveryInputsAbility: setDeliveryInputsAbility,
+    setPaymentInputsAbility: setPaymentInputsAbility
   };
 })();

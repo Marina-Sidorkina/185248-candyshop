@@ -149,6 +149,11 @@
     deliveryTextArea.disabled = abilityStatus;
   };
 
+  var returnInitialValues = function () {
+    cartBlock.innerHTML = '';
+    cartBlock.appendChild(createOrderElements(order));
+  };
+
   var checkGoodInOrderAmount = function (object) {
     var check = order.some(function (item) {
       return (item.name === object.name && item.amount === object.amount);
@@ -164,6 +169,7 @@
     checkGoods: checkGoodsInOrder,
     checkGoodAmount: checkGoodInOrderAmount,
     checkCatalogGoodAmount: checkCatalogGoodAmount,
-    setTextAreaAbility: setTextAreaAbility
+    setTextAreaAbility: setTextAreaAbility,
+    returnInitialValues: returnInitialValues
   };
 })();

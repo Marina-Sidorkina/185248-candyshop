@@ -15,9 +15,11 @@
   var closingButton = successNotification.querySelector('.modal__close');
 
   var onBuyingFormChange = function (evt) {
-    var label = buyingForm.querySelector('label[for="' + evt.target.id + '"]');
-    storeImage.src = 'img/map/' + stations.value + '.jpg';
-    storeImage.alt = label.textContent;
+    if (evt.target.name === 'store') {
+      var label = buyingForm.querySelector('label[for="' + evt.target.id + '"]');
+      storeImage.src = 'img/map/' + stations.value + '.jpg';
+      storeImage.alt = label.textContent;
+    }
   };
 
   var checkLuhnAlgorithm = function (string) {
@@ -113,9 +115,23 @@
     }
   };
 
+  var checkStation = function () {
+    stations.forEach(function (item) {
+      if (item.checked) {
+        var label = buyingForm.querySelector('label[for="' + item.id + '"]');
+        storeImage.src = 'img/map/' + item.value + '.jpg';
+        storeImage.alt = label.textContent;
+      }
+    });
+  };
+
   var onClosingButtonClick = function () {
     successNotification.classList.add('modal--hidden');
     buyingForm.reset();
+    window.tabs.setPaymentInputsAbility();
+    window.tabs.setDeliveryInputsAbility();
+    checkStation();
+    window.order.returnInitialValues();
   };
 
   var onLoad = function () {
