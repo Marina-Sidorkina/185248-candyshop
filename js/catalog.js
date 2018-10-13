@@ -40,6 +40,8 @@
     evt.preventDefault();
     window.order.addGoodToCart(object);
     window.order.enableFormInputs();
+    window.tabs.setPaymentInputsAbility();
+    window.tabs.setDeliveryInputsAbility();
   };
 
   var handleAmountStatus = function (object, element) {
