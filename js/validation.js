@@ -132,6 +132,7 @@
     window.tabs.setDeliveryInputsAbility();
     checkStation();
     window.order.returnInitialValues();
+    setInitialCardStatus();
   };
 
   var onLoad = function () {
@@ -139,7 +140,11 @@
     closingButton.addEventListener('click', onClosingButtonClick);
   };
 
-  cardStatus.textContent = 'Не определён';
+  var setInitialCardStatus = function () {
+    cardStatus.textContent = 'Не определён';
+  };
+
+  setInitialCardStatus();
   buyingForm.addEventListener('submit', function (evt) {
     window.backend.send(new FormData(buyingForm), onLoad, window.backend.onLoadAndSendDataError);
     evt.preventDefault();
